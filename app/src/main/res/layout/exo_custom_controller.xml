@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <!-- 배경 딤 — 투명. 화면 전체(match_parent)에 60% 검정이 깔리는 기본값이라,
+       로딩 중처럼 아직 영상 프레임이 없을 때 흰(테마) 배경이 회색으로
+       보이는 원인이었다. 하단바·재생 버튼도 이미 투명 배경이라 통일. -->
+  <View android:id="@id/exo_controls_background"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:background="@android:color/transparent"/>
+
+  <!-- 재생 컨트롤 → 진행바 → 하단 정보 바 순서로 세로로 쌓는다.
+
+       RelativeLayout + layout_above="@id/exo_progress_placeholder" 로 짰을 때
+       버튼들이 화면 맨 위로 튀어 오르는 버그가 있었다: PlayerControlView.java
+       는 inflate 시 이 placeholder 뷰를 통째로 제거하고 같은 자리에 id 가
+       다른(exo_progress) DefaultTimeBar 로 바꿔치기한다. 그 순간
+       "exo_progress_placeholder" 라는 id 를 가진 뷰가 트리에서 사라지므로,
+       그걸 앵커로 삼던 형제 뷰(exo_center_controls)는 세로 제약을 통째로
+       잃고 RelativeLayout 기본값(맨 위)으로 떨어진다.
+
+       LinearLayout 의 "쌓이는 순서" 배치는 형제를 id 로 찾지 않고 그저
+       바뀐 뷰를 같은 인덱스에 끼워 넣을 뿐이라 이 문제 자체가 없다. -->
+  <!-- paddingBottom/paddingStart/paddingEnd 는 XML에 고정값으로 두지 않는다 —
+       가로 모드에서는 시스템 내비게이션 바가 화면 아래가 아니라 좌/우 한쪽
+       측면에 세로 막대로 붙는 기기가 많아, 고정 하단 여백만으로는 방향에
+       따라 컨트롤이 불필요하게 위로 밀리거나(세로 가정 여백이 가로에도
+       남음) 우측 끝 버튼(exo_settings)이 그 막대에 가려 눌리지 않는다.
+       VideoPlayer.kt 가 실제 WindowInsets(systemBars)를 읽어 이 뷰
+       (@id/exo_controls_root)에 런타임으로 정확한 여백을 적용한다. -->
+  <!-- 딤 배경은 안 쓴다(지저분해 보인다는 피드백) — 대신 시간 표시(exo_time)
+       와 설정/자막 아이콘(exo_basic_controls)의 색 자체를 테마에 맞춘다.
+       흰 배경(레터박스) 위에서도, 실제 영상 위에서도 항상 테마 배경과
+       대비되는 글자색이라 안 보이는 문제가 없다.
+
+       **여기 @color/exo_bottom_bar_text 는 inflate 순간의 기본값일 뿐이고,
+       진짜 색은 VideoPlayer.kt 가 Compose 테마에서 읽어 덮어쓴다(§17.49).**
+       리소스의 values-night/ 한정자는 Configuration.uiMode(= 시스템 테마)를
+       보기 때문에, 시스템은 라이트인데 앱 설정만 다크인 경우를 못 맞춘다.
+
+       중앙 재생 컨트롤은 그대로 흰색 계열을 유지하되(테마 전환 없음),
+       VideoPlayer.kt 에서 순백 대신 살짝 회색 섞은 exo_center_control_tint
+       로 코드에서 틴트한다. -->
+  <LinearLayout
+      android:id="@+id/exo_controls_root"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="bottom"
+      android:orientation="vertical">
+
+    <!-- 1. 재생 컨트롤 -->
+    <LinearLayout
+        android:id="@id/exo_center_controls"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="18dp"
+        android:background="@android:color/transparent"
+        android:gravity="center"
+        android:clipToPadding="false"
+        android:layoutDirection="ltr">
+
+      <ImageButton android:id="@id/exo_prev"
+          style="@style/ExoStyledControls.Button.Center.Previous"/>
+      <include layout="@layout/exo_player_control_rewind_button" />
+      <ImageButton android:id="@id/exo_play_pause"
+          style="@style/ExoStyledControls.Button.Center.PlayPause"/>
+      <include layout="@layout/exo_player_control_ffwd_button" />
+      <ImageButton android:id="@id/exo_next"
+          style="@style/ExoStyledControls.Button.Center.Next"/>
+    </LinearLayout>
+
+    <!-- 2. 진행바 (하단 정보 바 바로 위에 빈틈없이 밀착)
+
+         layout_height/layout_marginBottom 은 반드시 dimen 리소스를 참조해야
+         한다 — PlayerControlView.java 는 inflate 시점에 이 placeholder의
+         getLayoutParams() 를 그대로 복사해 실제 DefaultTimeBar(exo_progress)
+         를 만든다(한 번뿐, 이후 재계산 없음). 여기 값을 리터럴로 박으면
+         dimens.xml 의 exo_styled_progress_layout_height 오버라이드(스크러버
+         동그라미 클리핑 방지, 20dp)가 조용히 무시되어 다시 잘려 보인다. -->
+    <View android:id="@id/exo_progress_placeholder"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/exo_styled_progress_layout_height"
+        android:layout_marginBottom="@dimen/exo_styled_progress_margin_bottom" />
+
+    <!-- 3. 하단 정보 바 (시간/설정) -->
+    <FrameLayout android:id="@id/exo_bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@android:color/transparent"
+        android:layoutDirection="ltr">
+
+      <LinearLayout android:id="@id/exo_time"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:paddingStart="16dp"
+          android:paddingEnd="16dp"
+          android:layout_gravity="center_vertical|start">
+        <TextView android:id="@id/exo_position" style="@style/ExoStyledControls.TimeText.Position" android:textColor="@color/exo_bottom_bar_text"/>
+        <TextView style="@style/ExoStyledControls.TimeText.Separator" android:textColor="@color/exo_bottom_bar_text"/>
+        <TextView android:id="@id/exo_duration" style="@style/ExoStyledControls.TimeText.Duration" android:textColor="@color/exo_bottom_bar_text"/>
+      </LinearLayout>
+
+      <LinearLayout android:id="@id/exo_basic_controls"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center_vertical|end"
+          android:paddingEnd="8dp">
+        <ImageButton android:id="@id/exo_subtitle" style="@style/ExoStyledControls.Button.Bottom.CC" android:tint="@color/exo_bottom_bar_text"/>
+        <!-- 설정 버튼: 이 위치를 기준으로 팝업이 위로 뜸 -->
+        <ImageButton android:id="@id/exo_settings" style="@style/ExoStyledControls.Button.Bottom.Settings" android:tint="@color/exo_bottom_bar_text"/>
+      </LinearLayout>
+    </FrameLayout>
+
+  </LinearLayout>
+
+  <!-- 크래시 방지 필수 요소 -->
+  <LinearLayout android:id="@id/exo_minimal_controls"
+      android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" />
+  <LinearLayout android:id="@+id/exo_top_controls"
+      android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" />
+
+</merge>

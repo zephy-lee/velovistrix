@@ -1,0 +1,22 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <!-- 프리즘을 통과하며 분광되는 빛. PhotoPrism 브랜드 에셋을 쓰지 않는 독자 도안.
+         2026-08-31 개명(VeloVistrix)에 맞춰 삼각형 심볼을 겹친 V-V(브랜드 이니셜)
+         심볼로 교체했다 — 골드 V(작음) 뒤에 오프화이트 V(큼)가 좌하단에서 이어지며,
+         우측 다리는 서로 평행. 좌 1줄 인입 / 우 3줄 아웃 컴포지션은 그대로 유지.
+         여러 라운드의 시안 리뷰를 거쳐 확정된
+         "Compact(D)" 구성을, 어댑티브 아이콘 세이프존(중앙 108dp 중 약 66dp
+         원형만 보임)에 맞춰 중심(54,54) 기준 0.75배 축소했다 — 원본 좌표 그대로면
+         마스크 크롭 시 실기기에서 과도하게 꽉 차 보인다(2026-09-01). -->
+    <!-- 입력광: 파스텔 레드, 반투명 한 줄. -->
+    <path android:strokeColor="#FF8A80" android:strokeAlpha="0.65" android:strokeWidth="2.6" android:strokeLineCap="round" android:pathData="M28,56 L43,56"/>
+    <path android:strokeColor="#4FC3F7" android:strokeWidth="2.5" android:strokeLineCap="round" android:pathData="M63,59 L75,53"/>
+    <path android:strokeColor="#2E7D32" android:strokeWidth="2.5" android:strokeLineCap="round" android:pathData="M65,62 L76,61"/>
+    <path android:strokeColor="#FFB74D" android:strokeWidth="2.5" android:strokeLineCap="round" android:pathData="M64,65 L74,71"/>
+    <!-- 골드 V (작음). -->
+    <path android:strokeColor="#D6AD5B" android:strokeWidth="3" android:strokeLineJoin="round" android:strokeLineCap="round" android:pathData="M41,38 L48,54 L56,38"/>
+    <!-- 오프화이트 V (큼). 우측 다리는 골드 V 우측 다리와 평행, 끝점은 골드 V 상단과 같은 높이. -->
+    <path android:strokeColor="#F4F2EC" android:strokeWidth="3" android:strokeLineJoin="round" android:strokeLineCap="round" android:pathData="M50,58 L56,71 L71,38"/>
+    <path android:strokeColor="#F4F2EC" android:strokeWidth="3" android:strokeLineCap="round" android:pathData="M71,38 L63,38"/>
+</vector>

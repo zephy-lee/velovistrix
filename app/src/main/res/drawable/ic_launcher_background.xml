@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 파스텔 하늘색(좌상단) -> 파스텔 보라색(우하단) 대각선 그라디언트.
+     은은한 흰색 radial 하이라이트를 겹쳐 "흐린" 느낌을 더한다. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <path android:pathData="M0,0 L108,0 L108,108 L0,108 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="20" android:startY="2"
+                android:endX="88" android:endY="106">
+                <item android:offset="0.0" android:color="#AEE1F5" />
+                <item android:offset="0.55" android:color="#C9B8EA" />
+                <item android:offset="1.0" android:color="#B48FDE" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <path android:pathData="M0,0 L108,0 L108,108 L0,108 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="radial"
+                android:centerX="35"
+                android:centerY="24"
+                android:gradientRadius="81"
+                android:tileMode="clamp">
+                <item android:offset="0.0" android:color="#59FFFFFF" />
+                <item android:offset="1.0" android:color="#00FFFFFF" />
+            </gradient>
+        </aapt:attr>
+    </path>
+</vector>

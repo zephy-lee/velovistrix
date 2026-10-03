@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- 동영상 프로그래스바 두께 및 레이아웃 높이 (§UX 수정)
+
+         스크러버(재생 위치 동그라미) 위쪽이 잘려 보이던 버그의 원인 두 가지:
+
+         1) 아래 두 줄의 dimen 이름이 잘못됐었다 — Media3 의 ExoStyledControls.TimeBar
+            스타일은 XML 속성 이름(scrubber_enabled_size/scrubber_dragged_size)이
+            아니라 exo_styled_progress_enabled_thumb_size /
+            exo_styled_progress_dragged_thumb_size 라는 *다른 이름의* dimen
+            리소스를 가리킨다. exo_styled_scrubber_* 는 media3-ui 안에 실존하는
+            리소스가 아니라서 tools:override 가 아무것도 덮어쓰지 못하고 조용히
+            죽은 값이 됐다 — 실제로는 기본값(10dp/14dp)이 계속 쓰이고 있었다.
+            (exo_styled_scrubber_disabled_size 에 대응하는 공식 dimen은 아예
+            없어서 그 항목은 삭제했다.)
+
+         2) 그것과 별개로, exo_styled_progress_layout_height 를 8dp 로 줄였는데
+            DefaultTimeBar 의 기본 bar_gravity 는 "bottom" 이다(Media3 소스
+            확인) — 즉 바/스크러버를 뷰의 *아래쪽 끝에 붙여서* 위로 필요한
+            만큼 그려 올라간다. 컨테이너가 8dp 밖에 안 되면 14~16dp짜리
+            동그라미는 대부분 뷰 상단(y=0) 밖으로 그려지고, 부모가 자식 뷰의
+            레이아웃 경계 밖을 클리핑하기 때문에 그 넘친 윗부분만 잘려 나갔다
+            — 아래쪽은 뷰 경계(8dp) 안에 남아 있어 멀쩡했던 것. 20dp면 드래그
+            중 최대 크기(16dp)까지 안 잘리고 다 들어간다. -->
+    <dimen name="exo_styled_progress_bar_height" tools:override="true">6dp</dimen>
+    <dimen name="exo_styled_progress_layout_height" tools:override="true">20dp</dimen>
+    <dimen name="exo_styled_progress_enabled_thumb_size" tools:override="true">14dp</dimen>
+    <dimen name="exo_styled_progress_dragged_thumb_size" tools:override="true">16dp</dimen>
+
+    <!-- 하단 바 높이 (팝업 메뉴 공간 확보를 위해 약간 높임) -->
+    <dimen name="exo_styled_bottom_bar_height" tools:override="true">56dp</dimen>
+
+    <!-- 첫 영상 진입 시(공유 요소 전환 애니메이션 중) 컨트롤 위치가 잠깐
+         잘못됐다가 좌우로 넘기면 정상으로 보이던 버그의 원인.
+         PlayerControlViewLayoutManager.onLayoutChange() 는 컨트롤러 크기가
+         바뀔 때마다 useMinimalMode() 를 재판정하는데, 전환 애니메이션 중
+         일시적으로 작은 크기로 측정되면 미니멀 모드로 들어갔다가, 애니메이션이
+         끝나고 실제 크기로 다시 측정되며 미니멀 모드가 해제된다. 이 해제
+         시점에 updateLayoutForSizeChange() 가 timeBar 의 bottomMargin 을
+         R.dimen.exo_styled_progress_margin_bottom(기본 52dp, 원래 화면
+         맨 아래에 딱 붙는 스톡 레이아웃 전제)로 **강제로 재설정**한다 —
+         이 커스텀 레이아웃(exo_custom_controller.xml)은 진행바를 마진 없이
+         하단 바 바로 위에 붙이는 구조라 이 52dp가 그대로 어긋난 위치로
+         나타난다. 좌우로 넘겨 보는 다음 영상들은 전환 애니메이션 없이
+         처음부터 최종 크기로 측정돼 미니멀 모드 전환 자체가 안 일어나서
+         이 코드 경로를 안 타 정상으로 보였던 것. 0dp로 오버라이드해
+         어느 쪽으로 전환되든 무해하게 만든다. -->
+    <dimen name="exo_styled_progress_margin_bottom" tools:override="true">0dp</dimen>
+
+    <!-- 설정(⚙) 팝업이 하단 바와 겹치지 않고 그 위에 뜨도록 여백을 늘림.
+         Media3 PlayerControlView.displaySettingsWindow() 는 이 값 하나로
+         팝업의 가로/세로 오프셋을 동시에 계산한다(xoff/yoff 둘 다 사용) —
+         세로만 늘리는 별도 API가 없다. 설정 버튼(48dp)이 하단 바(56dp)
+         안에서 가운데 정렬돼 있어 버튼 바닥은 바 바닥보다 4dp 위인데,
+         기본값 8dp로는 팝업 하단이 여전히 바 안쪽(아이콘 줄)에 걸친다.
+         버튼 바닥→바 상단까지 60dp + 여유 8dp = 68dp로 늘려 하단 바 전체
+         위로 뜨게 한다. 부작용: 팝업이 화면 우측 가장자리에서도 이만큼
+         더 안쪽으로 들어와 뜬다(가로 오프셋도 같은 값을 쓰므로). -->
+    <dimen name="exo_settings_offset" tools:override="true">68dp</dimen>
+</resources>

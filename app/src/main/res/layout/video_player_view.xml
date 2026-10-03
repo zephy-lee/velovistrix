@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Compose 의 AndroidView 안에 PlayerView 를 코드로만(PlayerView(context)) 만들면
+    기본 surface_type 이 SurfaceView 로 잡힌다. SurfaceView 는 일반 뷰 계층의
+    Z-order 합성 경로를 타지 않는 별도 창이라, Compose 가 그 위에 그린 레이어에
+    가려져 화면이 새까맣게만 보이는 사고가 난다 (뷰어에서 실제로 재현됨).
+    texture_view 로 강제하면 평범한 뷰처럼 합성되어 이 문제가 사라진다.
+
+    controller_layout_id 는 §17.2 재생 컨트롤 배치 수정용이다 — LivePhotoPlayer
+    (useController = false) 는 컨트롤 자체를 안 띄우니 이 속성이 있어도 영향 없다.
+-->
+<androidx.media3.ui.PlayerView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/video_player_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:surface_type="texture_view"
+    app:controller_layout_id="@layout/exo_custom_controller" />

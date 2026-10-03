@@ -1,0 +1,21 @@
+<resources>
+    <!--
+      Compose 가 첫 프레임을 그리기 전까지 보이는 것은 이 창 배경이다.
+      예전에는 부모가 android:Theme.Material.NoActionBar 였는데, 이건 이름과
+      달리 **다크** 테마다 (라이트는 Theme.Material.Light). 그래서 시스템이
+      라이트 모드여도 창 배경이 항상 어두웠고, 자체 배경을 칠하지 않는 화면
+      (로그인)에서 어두운 배경 위에 라이트 테마의 진한 글자가 겹쳐 보이지
+      않았다.
+
+      이제 values/ 는 라이트, values-night/ 는 다크로 두어 시스템 설정을 따른다.
+    -->
+    <style name="Theme.VeloVistrix" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/window_background</item>
+    </style>
+
+    <style name="Theme.VeloVistrix.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_icon</item>
+        <item name="postSplashScreenTheme">@style/Theme.VeloVistrix</item>
+    </style>
+</resources>

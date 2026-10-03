@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 한국어. 기본값(영어)은 values/strings.xml 에 있다. -->
+<resources>
+
+    <string name="unofficial_notice">비공식 서드파티 클라이언트입니다. PhotoPrism 개발팀과 무관합니다.</string>
+    <string name="unofficial_short">비공식 서드파티 클라이언트</string>
+
+    <string name="common_back">뒤로</string>
+    <string name="common_close">닫기</string>
+    <string name="common_cancel">취소</string>
+    <string name="common_confirm">확인</string>
+    <string name="common_delete">삭제</string>
+    <string name="common_retry">다시 시도</string>
+    <string name="common_clear">지우기</string>
+    <string name="common_more">더보기</string>
+    <string name="common_search">검색</string>
+    <string name="common_all">전체</string>
+    <string name="common_video">동영상</string>
+    <string name="common_load_failed">불러오지 못했습니다</string>
+    <plurals name="common_photo_count">
+        <item quantity="other">%1$d장</item>
+    </plurals>
+    <plurals name="common_photo_count_total">
+        <item quantity="other">전체 %1$d장</item>
+    </plurals>
+
+    <string name="tab_photos">사진</string>
+    <string name="tab_albums">앨범</string>
+    <string name="tab_favorites">즐겨찾기</string>
+    <string name="tab_menu">메뉴</string>
+    <string name="action_slideshow">슬라이드쇼</string>
+    <string name="action_settings">설정</string>
+    <string name="favorites_empty">즐겨찾기한 사진이 없습니다.</string>
+
+    <string name="login_server_address">서버 주소</string>
+    <string name="login_check_server">서버 확인</string>
+    <string name="login_connect">접속</string>
+    <string name="login_sign_in">로그인</string>
+    <string name="login_username">사용자명</string>
+    <string name="login_password">비밀번호</string>
+    <string name="login_app_password">앱 패스워드</string>
+    <string name="login_app_password_hint">Settings › Account 에서 발급 (권장)</string>
+    <string name="login_show_password">비밀번호 보기</string>
+    <string name="login_hide_password">비밀번호 숨기기</string>
+    <string name="login_plain_http_warning">평문 HTTP 로 접속합니다. 신뢰할 수 있는 네트워크에서만 사용하세요.</string>
+    <string name="login_public_mode">이 서버는 공개(public) 모드입니다. 로그인 없이 열람할 수 있습니다.</string>
+    <string name="login_attempted_addresses">시도한 주소</string>
+    <string name="login_version_unknown">버전 미상</string>
+
+    <string name="cert_untrusted_title">인증서를 신뢰할 수 없습니다</string>
+    <string name="cert_untrusted_body">이 서버의 인증서는 시스템이 검증할 수 없습니다. 셀프사인 인증서라면 정상일 수 있습니다.</string>
+    <string name="cert_untrusted_check">아래 지문이 본인 서버의 것과 일치하는지 확인한 뒤에만 신뢰하세요.</string>
+    <string name="cert_subject">주체: %1$s</string>
+    <string name="cert_trust">이 인증서 신뢰</string>
+
+    <string name="login_error_bad_address">주소를 해석할 수 없습니다.</string>
+    <string name="login_error_unreachable">서버에 연결할 수 없습니다: %1$s</string>
+    <string name="login_error_server_too_old">이 서버는 %1$s 빌드입니다. %2$s 이상이 필요합니다.</string>
+    <string name="login_error_version_unknown">서버 버전을 확인할 수 없습니다 (%1$s).</string>
+    <string name="login_error_version_unknown_none">보고 없음</string>
+    <string name="login_error_bad_credentials">사용자명 또는 비밀번호가 올바르지 않습니다.</string>
+    <string name="login_error_no_preview_token">서버가 미리보기 토큰을 주지 않았습니다. 썸네일을 표시할 수 없어 진행하지 않습니다.</string>
+    <string name="login_error_generic">로그인 실패: %1$s</string>
+
+    <string name="probe_tls_error">TLS 오류: %1$s</string>
+    <string name="probe_http_error">HTTP %1$s</string>
+    <string name="probe_host_not_found">호스트를 찾을 수 없음</string>
+    <string name="probe_connection_refused">연결 거부됨</string>
+    <string name="probe_timeout">응답 시간 초과</string>
+    <string name="probe_network_error">네트워크 오류</string>
+    <string name="probe_hint_config_blocked">PhotoPrism 서버는 찾았지만 /api/v1/config 가 응답하지 않습니다. 서버 버전이 너무 낮거나 리버스 프록시가 /api 경로를 막고 있을 수 있습니다.</string>
+    <string name="probe_hint_no_api">이 주소에서 웹 서버가 응답하지만 PhotoPrism API 가 없습니다.\n• 리버스 프록시 뒤 서브패스라면 그 경로까지 입력하세요 (예: example.com/photoprism)\n• 포트가 맞는지 확인하세요 (PhotoPrism 기본값 2342)\n• 그 포트에 다른 서비스가 떠 있을 수 있습니다</string>
+    <string name="probe_hint_auth_required">서버가 인증을 요구합니다. 리버스 프록시의 기본 인증(basic auth)이 걸려 있다면 해제해야 합니다.</string>
+    <string name="probe_hint_tls">TLS 협상에 실패했습니다. 평문 HTTP 서버라면 주소 앞에 http:// 를 명시해 보세요.</string>
+    <string name="probe_hint_no_connection">서버에 연결하지 못했습니다.\n• 같은 네트워크에 있는지 확인하세요\n• 주소와 포트가 맞는지 확인하세요\n• 브라우저에서 같은 주소가 열리는지 먼저 확인해 보세요</string>
+    <string name="probe_hint_bad_response">서버 응답을 해석하지 못했습니다.</string>
+
+    <string name="grid_no_date">날짜 정보 없음</string>
+    <string name="grid_load_more_failed">더 불러오지 못했습니다 · 다시 시도</string>
+    <string name="photos_empty">사진이 없습니다.</string>
+
+    <string name="albums_load_failed">앨범을 불러오지 못했습니다</string>
+    <string name="albums_empty">앨범이 없습니다.</string>
+    <string name="albums_favorites_first">즐겨찾기 먼저</string>
+    <string name="album_tab_images">이미지</string>
+    <string name="album_tab_videos">동영상</string>
+    <string name="album_no_images">이미지가 없습니다.</string>
+    <string name="album_no_videos">동영상이 없습니다.</string>
+    <string name="album_sort_name_asc">이름순 (A→Z)</string>
+    <string name="album_sort_name_desc">이름 역순 (Z→A)</string>
+    <string name="album_sort_recently_updated">최신 업데이트순</string>
+    <string name="album_sort_oldest">오래된순</string>
+
+    <string name="search_close">검색 닫기</string>
+    <string name="search_hint">사진 검색</string>
+    <string name="search_filters">필터</string>
+    <string name="search_no_filter_results">필터에 맞는 결과가 없습니다.</string>
+    <string name="search_no_query_results">\"%1$s\" 에 대한 결과가 없습니다.</string>
+    <string name="search_prompt">검색어를 입력하세요.</string>
+    <string name="search_recent">최근 검색어</string>
+    <string name="search_clear_all">전체 삭제</string>
+
+    <string name="filter_title">필터</string>
+    <string name="filter_reset">초기화</string>
+    <string name="filter_period">기간</string>
+    <string name="filter_type">타입</string>
+    <string name="filter_camera">카메라</string>
+    <string name="filter_camera_hint">예: iPhone 13 Pro</string>
+    <string name="filter_location">위치</string>
+    <string name="filter_has_location">위치 있음</string>
+    <string name="filter_no_location">위치 없음</string>
+    <string name="filter_apply">필터 적용</string>
+    <string name="filter_today">오늘</string>
+    <string name="filter_last_7_days">최근 7일</string>
+    <string name="filter_last_30_days">최근 30일</string>
+    <string name="filter_this_year">올해</string>
+    <string name="filter_all_time">전체 기간</string>
+    <string name="filter_custom_range">직접 선택</string>
+    <string name="filter_pick_date">날짜 선택</string>
+    <string name="filter_start_date">시작일</string>
+    <string name="filter_end_date">종료일</string>
+    <string name="filter_type_photo">사진</string>
+    <string name="filter_type_video">동영상</string>
+    <string name="filter_type_live">라이브 포토</string>
+
+    <string name="viewer_info">정보</string>
+    <string name="viewer_photo_unavailable">아직 이 사진을 불러오지 못했습니다.</string>
+    <string name="viewer_photo_offline">오프라인에서는 새로 받아올 수 없습니다.</string>
+    <string name="info_untitled">(제목 없음)</string>
+    <string name="info_taken">촬영</string>
+    <string name="info_camera">카메라</string>
+    <string name="info_lens">렌즈</string>
+    <string name="info_exposure">노출</string>
+    <string name="info_resolution">해상도</string>
+    <string name="info_location">위치</string>
+    <string name="info_type">종류</string>
+    <string name="info_duration">재생 시간</string>
+    <string name="info_video_codec">비디오 코덱</string>
+    <string name="info_audio_codec">오디오 코덱</string>
+    <string name="info_frame_rate">프레임률</string>
+    <string name="info_file">파일</string>
+    <string name="info_size">용량</string>
+
+    <string name="video_error">동영상을 재생할 수 없습니다</string>
+    <string name="video_offline_title">네트워크에 연결되어 있지 않습니다</string>
+    <string name="video_offline_body">동영상은 오프라인에서 재생할 수 없습니다</string>
+
+    <string name="slideshow_exit">슬라이드쇼 끝내기</string>
+    <string name="slideshow_previous">이전</string>
+    <string name="slideshow_next">다음</string>
+    <string name="slideshow_pause">일시정지</string>
+    <string name="slideshow_play">재생</string>
+
+    <string name="settings_title">설정</string>
+    <string name="settings_section_display">보기</string>
+    <string name="settings_start_screen">시작 화면</string>
+    <string name="settings_grid_density">그리드 밀도</string>
+    <string name="settings_theme">테마</string>
+    <string name="settings_section_video">동영상</string>
+    <string name="settings_playback_mode">재생 방식</string>
+    <string name="settings_section_slideshow">슬라이드쇼</string>
+    <string name="settings_slide_duration">사진당 시간</string>
+    <string name="settings_ken_burns">Ken Burns 효과</string>
+    <string name="settings_ken_burns_desc">사진이 머무는 동안 아주 느리게 확대·이동합니다</string>
+    <string name="settings_shuffle">무작위 순서</string>
+    <string name="settings_shuffle_desc">한 바퀴를 다 돌기 전에는 같은 사진이 다시 나오지 않습니다</string>
+    <string name="settings_section_storage">저장 공간</string>
+    <string name="settings_calculating">계산 중…</string>
+    <string name="settings_section_sponsor">후원</string>
+    <string name="settings_sponsor_desc">무료·무광고 앱입니다</string>
+    <string name="settings_section_account">계정</string>
+    <string name="settings_sign_out">로그아웃</string>
+    <string name="settings_sign_out_body">이 서버에서 로그아웃합니다. 저장된 자격증명이 기기에서 삭제됩니다.</string>
+
+    <string name="start_screen_albums">앨범</string>
+    <string name="start_screen_photos">사진</string>
+    <string name="start_screen_favorites">즐겨찾기</string>
+    <string name="density_wide">넓게</string>
+    <string name="density_default">기본</string>
+    <string name="density_dense">촘촘하게</string>
+    <string name="density_densest">아주 촘촘하게</string>
+    <string name="theme_system">시스템 설정 따르기</string>
+    <string name="theme_light">라이트</string>
+    <string name="theme_dark">다크</string>
+    <plurals name="settings_seconds">
+        <item quantity="other">%1$d초</item>
+    </plurals>
+    <string name="playback_auto">자동 (스트리밍 실패 시 원본으로 전환)</string>
+    <string name="playback_original">항상 원본으로 재생 (WebDAV)</string>
+
+    <string name="upcoming_notice">준비 중 — 아직 쓸 수 없습니다</string>
+    <string name="upcoming_people">사람</string>
+    <string name="upcoming_calendar">달력</string>
+    <string name="upcoming_states">지역</string>
+    <string name="upcoming_places">장소</string>
+    <string name="upcoming_folders">폴더</string>
+    <string name="upcoming_labels">라벨</string>
+    <string name="upcoming_moments">나의 순간</string>
+    <string name="upcoming_stories">스토리</string>
+
+    <string name="pattern_month_header">yyyy년 M월</string>
+    <string name="pattern_full_date">yyyy년 M월 d일</string>
+
+    <string name="settings_clear_cache">캐시 삭제</string>
+    <string name="settings_clear_cache_desc">%1$s · 썸네일과 오프라인 목록 전부</string>
+    <string name="settings_clear_cache_body">이 앱이 기기에 저장해 둔 것을 전부 지웁니다 — 받아 둔 썸네일과, 타임라인·앨범·즐겨찾기·검색 결과 목록입니다. 서버에 있는 것은 건드리지 않으며, 다시 접속하면 처음부터 새로 채워집니다. 그 전까지는 비행기 모드 등 오프라인 상태에서 아무것도 안 보입니다.</string>
+</resources>

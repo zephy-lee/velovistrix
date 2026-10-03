@@ -1,0 +1,7 @@
+<resources>
+    <!-- Compose 의 다크 배경(DarkColors.background)과 동일해야 한다. -->
+    <color name="window_background">#0B0E11</color>
+
+    <!-- Compose MaterialTheme.colorScheme.onSurface(다크)와 같은 값. -->
+    <color name="exo_bottom_bar_text">#E2E6EA</color>
+</resources>

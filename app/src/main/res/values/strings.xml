@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Default (English) strings.
+
+  Korean lives in values-ko/. Keys are prefixed by the screen or component that
+  owns them; anything reused across screens is prefixed `common_`.
+-->
+<resources>
+
+    <!-- ── Identity ─────────────────────────────────────────────────── -->
+    <string name="app_name">VeloVistrix</string>
+    <string name="app_name_full">VeloVistrix: viewer for PhotoPrism</string>
+    <string name="unofficial_notice">An unofficial third-party client, not affiliated with the PhotoPrism team.</string>
+    <string name="unofficial_short">Unofficial third-party client</string>
+
+    <!-- ── Shared ───────────────────────────────────────────────────── -->
+    <string name="common_back">Back</string>
+    <string name="common_close">Close</string>
+    <string name="common_cancel">Cancel</string>
+    <string name="common_confirm">OK</string>
+    <string name="common_delete">Delete</string>
+    <string name="common_retry">Retry</string>
+    <string name="common_clear">Clear</string>
+    <string name="common_more">More</string>
+    <string name="common_search">Search</string>
+    <string name="common_all">All</string>
+    <string name="common_video">Video</string>
+    <string name="common_load_failed">Couldn\'t load</string>
+    <plurals name="common_photo_count">
+        <item quantity="one">%1$d photo</item>
+        <item quantity="other">%1$d photos</item>
+    </plurals>
+    <plurals name="common_photo_count_total">
+        <item quantity="one">%1$d photo in total</item>
+        <item quantity="other">%1$d photos in total</item>
+    </plurals>
+
+    <!-- ── Navigation ───────────────────────────────────────────────── -->
+    <string name="tab_photos">Photos</string>
+    <string name="tab_albums">Albums</string>
+    <string name="tab_favorites">Favorites</string>
+    <string name="tab_menu">Menu</string>
+    <string name="action_slideshow">Slideshow</string>
+    <string name="action_settings">Settings</string>
+    <string name="favorites_empty">No favorite photos yet.</string>
+
+    <!-- ── Sign-in ──────────────────────────────────────────────────── -->
+    <string name="login_server_address">Server address</string>
+    <string name="login_check_server">Check server</string>
+    <string name="login_connect">Connect</string>
+    <string name="login_sign_in">Sign in</string>
+    <string name="login_username">Username</string>
+    <string name="login_password">Password</string>
+    <string name="login_app_password">App password</string>
+    <string name="login_app_password_hint">Issue one under Settings › Account (recommended)</string>
+    <string name="login_show_password">Show password</string>
+    <string name="login_hide_password">Hide password</string>
+    <string name="login_plain_http_warning">This connects over plain HTTP. Use it only on a network you trust.</string>
+    <string name="login_public_mode">This server is in public mode. You can browse it without signing in.</string>
+    <string name="login_attempted_addresses">Addresses tried</string>
+    <string name="login_version_unknown">version unknown</string>
+
+    <!-- Certificate trust prompt -->
+    <string name="cert_untrusted_title">Certificate can\'t be trusted</string>
+    <string name="cert_untrusted_body">The system can\'t verify this server\'s certificate. That is normal for a self-signed one.</string>
+    <string name="cert_untrusted_check">Trust it only after checking the fingerprint below against your own server.</string>
+    <string name="cert_subject">Subject: %1$s</string>
+    <string name="cert_trust">Trust this certificate</string>
+
+    <!-- Sign-in failures -->
+    <string name="login_error_bad_address">That address can\'t be parsed.</string>
+    <string name="login_error_unreachable">Can\'t reach the server: %1$s</string>
+    <string name="login_error_server_too_old">This server is build %1$s. Build %2$s or newer is required.</string>
+    <string name="login_error_version_unknown">Can\'t determine the server version (%1$s).</string>
+    <string name="login_error_version_unknown_none">none reported</string>
+    <string name="login_error_bad_credentials">That username or password isn\'t right.</string>
+    <string name="login_error_no_preview_token">The server didn\'t issue a preview token. Thumbnails can\'t be shown, so sign-in was stopped.</string>
+    <string name="login_error_generic">Sign-in failed: %1$s</string>
+
+    <!-- ── Connection diagnostics ───────────────────────────────────── -->
+    <string name="probe_tls_error">TLS error: %1$s</string>
+    <string name="probe_http_error">HTTP %1$s</string>
+    <!-- 서버·라이브러리가 준 원문을 그대로 통과시키는 자리. -->
+    <string name="probe_raw">%1$s</string>
+    <string name="probe_host_not_found">Host not found</string>
+    <string name="probe_connection_refused">Connection refused</string>
+    <string name="probe_timeout">Timed out</string>
+    <string name="probe_network_error">Network error</string>
+    <string name="probe_hint_config_blocked">Found a PhotoPrism server, but /api/v1/config doesn\'t answer. The server may be too old, or a reverse proxy may be blocking the /api path.</string>
+    <string name="probe_hint_no_api">A web server answers at this address, but there is no PhotoPrism API on it.\n• Behind a reverse proxy sub-path? Include the path (e.g. example.com/photoprism)\n• Check the port (PhotoPrism defaults to 2342)\n• Something else may be running on that port</string>
+    <string name="probe_hint_auth_required">The server demands authentication. If your reverse proxy has basic auth on it, turn that off.</string>
+    <string name="probe_hint_tls">TLS negotiation failed. For a plain HTTP server, put http:// in front of the address.</string>
+    <string name="probe_hint_no_connection">Couldn\'t reach the server.\n• Check that you are on the same network\n• Check the address and the port\n• Try opening the same address in a browser first</string>
+    <string name="probe_hint_bad_response">Couldn\'t make sense of the server\'s response.</string>
+
+    <!-- ── Photo grid ───────────────────────────────────────────────── -->
+    <string name="grid_no_date">No date</string>
+    <string name="grid_load_more_failed">Couldn\'t load more · Retry</string>
+    <string name="photos_empty">No photos here.</string>
+
+    <!-- ── Albums ───────────────────────────────────────────────────── -->
+    <string name="albums_load_failed">Couldn\'t load albums</string>
+    <string name="albums_empty">No albums here.</string>
+    <string name="albums_favorites_first">Favorites first</string>
+    <string name="album_tab_images">Images</string>
+    <string name="album_tab_videos">Videos</string>
+    <string name="album_no_images">No images here.</string>
+    <string name="album_no_videos">No videos here.</string>
+    <string name="album_sort_name_asc">Name (A→Z)</string>
+    <string name="album_sort_name_desc">Name (Z→A)</string>
+    <string name="album_sort_recently_updated">Recently updated</string>
+    <string name="album_sort_oldest">Oldest first</string>
+
+    <!-- ── Search ───────────────────────────────────────────────────── -->
+    <string name="search_close">Close search</string>
+    <string name="search_hint">Search photos</string>
+    <string name="search_filters">Filters</string>
+    <string name="search_no_filter_results">Nothing matches these filters.</string>
+    <string name="search_no_query_results">Nothing found for \"%1$s\".</string>
+    <string name="search_prompt">Type something to search.</string>
+    <string name="search_recent">Recent searches</string>
+    <string name="search_clear_all">Clear all</string>
+
+    <!-- Filter sheet -->
+    <string name="filter_title">Filters</string>
+    <string name="filter_reset">Reset</string>
+    <string name="filter_period">Period</string>
+    <string name="filter_type">Type</string>
+    <string name="filter_camera">Camera</string>
+    <string name="filter_camera_hint">e.g. iPhone 13 Pro</string>
+    <string name="filter_location">Location</string>
+    <string name="filter_has_location">Has location</string>
+    <string name="filter_no_location">No location</string>
+    <string name="filter_apply">Apply filters</string>
+    <string name="filter_today">Today</string>
+    <string name="filter_last_7_days">Last 7 days</string>
+    <string name="filter_last_30_days">Last 30 days</string>
+    <string name="filter_this_year">This year</string>
+    <string name="filter_all_time">All time</string>
+    <string name="filter_custom_range">Pick dates</string>
+    <string name="filter_pick_date">Pick a date</string>
+    <string name="filter_start_date">Start date</string>
+    <string name="filter_end_date">End date</string>
+    <string name="filter_type_photo">Photos</string>
+    <string name="filter_type_video">Videos</string>
+    <string name="filter_type_live">Live Photos</string>
+
+    <!-- ── Viewer ───────────────────────────────────────────────────── -->
+    <string name="viewer_info">Info</string>
+    <string name="viewer_photo_unavailable">This photo isn\'t loaded yet.</string>
+    <string name="viewer_photo_offline">It can\'t be fetched while you are offline.</string>
+    <string name="info_untitled">(untitled)</string>
+    <string name="info_taken">Taken</string>
+    <string name="info_camera">Camera</string>
+    <string name="info_lens">Lens</string>
+    <string name="info_exposure">Exposure</string>
+    <string name="info_resolution">Resolution</string>
+    <string name="info_location">Location</string>
+    <string name="info_type">Type</string>
+    <string name="info_duration">Duration</string>
+    <string name="info_video_codec">Video codec</string>
+    <string name="info_audio_codec">Audio codec</string>
+    <string name="info_frame_rate">Frame rate</string>
+    <string name="info_file">File</string>
+    <string name="info_size">Size</string>
+
+    <!-- Video playback -->
+    <string name="video_error">This video can\'t be played</string>
+    <string name="video_offline_title">You are not connected</string>
+    <string name="video_offline_body">Videos can\'t be played offline</string>
+
+    <!-- ── Slideshow ────────────────────────────────────────────────── -->
+    <string name="slideshow_exit">End slideshow</string>
+    <string name="slideshow_previous">Previous</string>
+    <string name="slideshow_next">Next</string>
+    <string name="slideshow_pause">Pause</string>
+    <string name="slideshow_play">Play</string>
+
+    <!-- ── Settings ─────────────────────────────────────────────────── -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_section_display">Display</string>
+    <string name="settings_start_screen">Start screen</string>
+    <string name="settings_grid_density">Grid density</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_section_video">Video</string>
+    <string name="settings_playback_mode">Playback</string>
+    <string name="settings_section_slideshow">Slideshow</string>
+    <string name="settings_slide_duration">Time per photo</string>
+    <string name="settings_ken_burns">Ken Burns effect</string>
+    <string name="settings_ken_burns_desc">Zooms and pans very slowly while a photo is on screen</string>
+    <string name="settings_shuffle">Shuffle</string>
+    <string name="settings_shuffle_desc">No photo repeats until every one has been shown</string>
+    <string name="settings_section_storage">Storage</string>
+    <string name="settings_calculating">Calculating…</string>
+    <string name="settings_section_sponsor">Sponsor</string>
+    <string name="settings_sponsor_desc">Free, with no ads</string>
+    <string name="settings_section_account">Account</string>
+    <string name="settings_sign_out">Sign out</string>
+    <string name="settings_sign_out_body">You will be signed out of this server. The stored credentials are deleted from this device.</string>
+
+    <!-- Settings values -->
+    <string name="start_screen_albums">Albums</string>
+    <string name="start_screen_photos">Photos</string>
+    <string name="start_screen_favorites">Favorites</string>
+    <string name="density_wide">Roomy</string>
+    <string name="density_default">Default</string>
+    <string name="density_dense">Dense</string>
+    <string name="density_densest">Densest</string>
+    <string name="theme_system">Follow the system</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <plurals name="settings_seconds">
+        <item quantity="one">%1$d second</item>
+        <item quantity="other">%1$d seconds</item>
+    </plurals>
+    <string name="playback_auto">Automatic (fall back to the original if streaming fails)</string>
+    <string name="playback_original">Always play the original (WebDAV)</string>
+
+    <!-- ── Upcoming features ────────────────────────────────────────── -->
+    <string name="upcoming_notice">Coming later — not available yet</string>
+    <string name="upcoming_people">People</string>
+    <string name="upcoming_calendar">Calendar</string>
+    <string name="upcoming_states">Regions</string>
+    <string name="upcoming_places">Places</string>
+    <string name="upcoming_folders">Folders</string>
+    <string name="upcoming_labels">Labels</string>
+    <string name="upcoming_moments">Moments</string>
+    <string name="upcoming_stories">Stories</string>
+
+    <!-- ── Date patterns (locale-specific, translated as patterns) ───── -->
+    <string name="pattern_month_header">MMMM yyyy</string>
+    <string name="pattern_full_date">MMM d, yyyy</string>
+
+    <string name="settings_clear_cache">Clear cache</string>
+    <string name="settings_clear_cache_desc">%1$s · thumbnails and offline lists</string>
+    <string name="settings_clear_cache_body">This deletes everything the app has stored on this device: the downloaded thumbnails and the cached timeline, albums, favorites and search results. Nothing on your server is touched — it all refills the next time the app reaches it. Until then, offline browsing (in airplane mode, say) will show nothing.</string>
+</resources>

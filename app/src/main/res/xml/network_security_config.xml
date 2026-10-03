@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  §4.5 — 자체 호스팅 대응.
+
+  PhotoPrism 은 셀프호스팅이 전제라 LAN 주소(http://192.168.x.x:2342)로 운영되는
+  경우가 매우 흔하다. Android 9+ 는 평문 HTTP 를 기본 차단하므로, 이를 허용하지
+  않으면 상당수 사용자가 로그인 화면에서 그대로 막힌다.
+
+  다만 무제한 허용은 아니다:
+   - 앱은 사용자가 명시적으로 입력한 단일 서버에만 접속한다.
+   - HTTP 를 입력하면 로그인 화면에서 경고를 표시한다 (ServerUrl.isCleartext).
+   - 인증서 오류는 자동 신뢰하지 않고 지문을 보여준 뒤 사용자가 승인한 핀만
+     신뢰한다 (UserPinnedTrustManager). trust-all 은 사용하지 않는다.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+            <!-- 사용자가 기기에 설치한 사설 CA (셀프호스팅에서 흔함) -->
+            <certificates src="user" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

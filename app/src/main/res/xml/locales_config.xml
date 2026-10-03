@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  §11.8 — 앱이 실제로 번역돼 있는 언어 목록.
+
+  이걸 선언하면 안드로이드 13+ 의 설정 › 앱 › 언어에 이 앱만의 언어 선택이
+  생긴다. 기기 전체를 한국어로 쓰면서 이 앱만 영어로(또는 반대로) 볼 수 있다.
+  목록에 없는 언어로는 고를 수 없으니, 번역을 추가하면 여기도 같이 늘린다.
+-->
+<locale-config xmlns:android="http://schemas.android.com/apk/res/android">
+    <locale android:name="en" />
+    <locale android:name="ko" />
+</locale-config>

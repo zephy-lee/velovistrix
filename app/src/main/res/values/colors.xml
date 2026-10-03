@@ -1,0 +1,18 @@
+<resources>
+    <!-- Compose 의 라이트 배경(#FFFFFF)과 맞춰 첫 프레임에서 색이 튀지 않게 한다. -->
+    <color name="window_background">#FFFFFF</color>
+    <color name="splash_background">#101418</color>
+    <color name="ic_launcher_background">#101418</color>
+
+    <!-- 동영상 컨트롤 하단 바(시간·설정)의 **inflate 시점 기본값**. 화면에
+         실제로 보이는 색은 VideoPlayer.kt 가 Compose 테마에서 읽어 덮어쓴다
+         (§17.49) — values-night/ 한정자는 시스템 테마만 보고 앱의 테마 설정을
+         모르기 때문이다. 그래도 여기 값을 남겨 두는 것은, 덮어쓰기 전 한
+         프레임이라도 엉뚱한 색이 비치지 않게 하려는 것이다. -->
+    <color name="exo_bottom_bar_text">#191C1E</color>
+    <!-- 중앙 재생 컨트롤(재생/앞뒤 이동)은 테마와 무관하게 흰색 계열을
+         유지하되, 순백(#FFFFFF)이면 세로 영상이 가로 화면에서 레터박스로
+         보일 때 흰 배경 위에서 안 보인다 — 살짝 회색을 섞어 최소 대비를
+         남긴다. -->
+    <color name="exo_center_control_tint">#D8D8D8</color>
+</resources>

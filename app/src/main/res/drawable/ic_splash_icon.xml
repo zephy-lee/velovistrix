@@ -1,0 +1,16 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <!-- 런처 아이콘(ic_launcher_foreground.xml)과 같은 도안이지만, 스플래시
+         배경(#101418, 거의 검정)에서도 대비가 나오도록 골드/초록/좌측 인입선을
+         밝게 조정한 전용 버전이다 (2026-08-31).
+         좌표는 런처 아이콘과 동일하게 세이프존에 맞춰 0.75배 축소했다
+         (2026-09-01). -->
+    <path android:strokeColor="#4FC3F7" android:strokeAlpha="0.5" android:strokeWidth="2.6" android:strokeLineCap="round" android:pathData="M28,56 L43,56"/>
+    <path android:strokeColor="#4FC3F7" android:strokeAlpha="0.85" android:strokeWidth="2.5" android:strokeLineCap="round" android:pathData="M63,59 L75,53"/>
+    <path android:strokeColor="#4CAF50" android:strokeAlpha="0.85" android:strokeWidth="2.5" android:strokeLineCap="round" android:pathData="M65,62 L76,61"/>
+    <path android:strokeColor="#FFB74D" android:strokeAlpha="0.85" android:strokeWidth="2.5" android:strokeLineCap="round" android:pathData="M64,65 L74,71"/>
+    <path android:strokeColor="#E8C98A" android:strokeWidth="3" android:strokeLineJoin="round" android:strokeLineCap="round" android:pathData="M41,38 L48,54 L56,38"/>
+    <path android:strokeColor="#F4F2EC" android:strokeWidth="3" android:strokeLineJoin="round" android:strokeLineCap="round" android:pathData="M50,58 L56,71 L71,38"/>
+    <path android:strokeColor="#F4F2EC" android:strokeWidth="3" android:strokeLineCap="round" android:pathData="M71,38 L63,38"/>
+</vector>

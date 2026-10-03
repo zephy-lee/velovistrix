@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy — VeloVistrix</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --ink: #1a1c1f;
+    --muted: #5c6370;
+    --rule: #e2e5ea;
+    --ground: #ffffff;
+    --accent: #2f6f5e;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink: #e6e8ec;
+      --muted: #9aa2af;
+      --rule: #2c3037;
+      --ground: #16181c;
+      --accent: #7fc4ae;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 3rem 1.25rem 5rem;
+    background: var(--ground);
+    color: var(--ink);
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  main { max-width: 42rem; margin: 0 auto; }
+  h1 { font-size: 1.75rem; line-height: 1.25; margin: 0 0 .35rem; letter-spacing: -.015em; }
+  h2 {
+    font-size: 1.05rem; margin: 2.5rem 0 .6rem; letter-spacing: .01em;
+    padding-bottom: .4rem; border-bottom: 1px solid var(--rule);
+  }
+  .sub { color: var(--muted); margin: 0 0 2rem; font-size: .95rem; }
+  ul { padding-left: 1.25rem; }
+  li { margin: .3rem 0; }
+  strong { font-weight: 600; }
+  a { color: var(--accent); }
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: .9em; background: color-mix(in srgb, var(--ink) 8%, transparent);
+    padding: .1em .35em; border-radius: 3px;
+  }
+  .note {
+    border-left: 3px solid var(--accent); padding: .1rem 0 .1rem 1rem;
+    margin: 1.25rem 0; color: var(--muted);
+  }
+  footer {
+    margin-top: 3.5rem; padding-top: 1rem; border-top: 1px solid var(--rule);
+    color: var(--muted); font-size: .9rem;
+  }
+</style>
+</head>
+<body>
+<main>
+
+<h1>Privacy Policy</h1>
+<p class="sub">VeloVistrix — viewer for PhotoPrism<br>Effective 6 September 2026</p>
+
+<p>VeloVistrix is a read-only gallery viewer for a <a href="https://www.photoprism.app/">PhotoPrism</a>
+server that you host and control. It is an independent third-party client and is not affiliated with,
+endorsed by, or supported by the PhotoPrism project.</p>
+
+<div class="note">
+  <strong>In short:</strong> this app collects nothing. It has no analytics, no crash reporting,
+  no advertising, and no tracking SDKs of any kind. It talks only to the server address you type in.
+</div>
+
+<h2>Information we collect</h2>
+<p><strong>None.</strong> The developer operates no servers and receives no data from this app.
+There is no account to create, no telemetry endpoint, and no third-party service embedded in the app.</p>
+
+<h2>Information stored on your device</h2>
+<p>Everything the app stores stays on your device:</p>
+<ul>
+  <li><strong>Server address</strong> — the PhotoPrism URL you enter.</li>
+  <li><strong>Session token</strong> — the credential your server issues at sign-in, kept in
+      encrypted storage.</li>
+  <li><strong>Cached photo metadata</strong> — album and photo listings, so the app can show your
+      library without a network round trip.</li>
+  <li><strong>Cached thumbnails and images</strong> — kept so browsing does not re-download the
+      same picture repeatedly.</li>
+  <li><strong>App settings</strong> — your display and slideshow preferences.</li>
+</ul>
+<p>None of this is transmitted anywhere. You can erase all of it at any time by signing out or by
+clearing the cache in the app's settings; uninstalling the app removes it as well.</p>
+
+<h2>Network activity</h2>
+<p>The app connects to exactly one destination: <strong>the PhotoPrism server address you supply</strong>.
+It contacts no other host — no analytics endpoint, no content delivery network, no update server.
+Your photos travel between your device and your own server, and nowhere else.</p>
+<p>Because your server is yours, whatever it logs is governed by your own configuration, not by this app.</p>
+
+<h2>Permissions</h2>
+<ul>
+  <li><code>INTERNET</code> — required to reach your PhotoPrism server.</li>
+  <li><code>ACCESS_NETWORK_STATE</code> — used to tell "you are offline" apart from
+      "your server is unreachable" when showing errors.</li>
+</ul>
+<p>The app requests no access to your device's photos, camera, location, contacts, or storage.</p>
+
+<h2>Your photos are never modified</h2>
+<p>VeloVistrix is read-only by design. It never sends a write request to your server, so it cannot
+upload, edit, delete, archive, re-tag, or re-index anything in your library.</p>
+
+<h2>Children</h2>
+<p>The app is not directed at children and collects no personal information from anyone,
+including children.</p>
+
+<h2>Changes to this policy</h2>
+<p>If this policy changes, the revised version will be published at this address with a new
+effective date. Material changes will also be noted in the app's release notes.</p>
+
+<h2>Contact</h2>
+<p>Questions about this policy can be raised at
+<a href="https://github.com/zephy-lee/velovistrix/issues">the project's issue tracker</a>.</p>
+
+<footer>
+  VeloVistrix is not an official PhotoPrism application. PhotoPrism is a trademark of its
+  respective owners and is referenced here only to describe compatibility.
+</footer>
+
+</main>
+</body>
+</html>
