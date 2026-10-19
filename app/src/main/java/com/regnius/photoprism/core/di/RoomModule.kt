@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.regnius.photoprism.core.data.local.AppDatabase
 import com.regnius.photoprism.core.data.local.dao.AlbumDao
+import com.regnius.photoprism.core.data.local.dao.CatalogDao
 import com.regnius.photoprism.core.data.local.dao.FeedRemoteKeyDao
 import com.regnius.photoprism.core.data.local.dao.PhotoDao
 import com.regnius.photoprism.core.data.local.dao.PhotoFeedDao
@@ -38,4 +39,7 @@ object RoomModule {
 
     @Provides
     fun provideAlbumDao(db: AppDatabase): AlbumDao = db.albumDao()
+
+    @Provides
+    fun provideCatalogDao(db: AppDatabase): CatalogDao = db.catalogDao()
 }

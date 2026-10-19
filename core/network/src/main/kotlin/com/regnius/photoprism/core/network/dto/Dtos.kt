@@ -149,3 +149,41 @@ data class AlbumDto(
     @SerialName("UpdatedAt") val updatedAt: String? = null,
     @SerialName("Thumb") val thumb: String? = null,
 )
+
+/**
+ * `/api/v1/labels` 의 항목 (Phase 3.5).
+ *
+ * [slug] 가 검색에 쓰는 값이다 — `q=label:<slug>`. [uid] 로는 검색이 안 된다.
+ * 사용자가 라벨 이름을 고쳤으면 [customSlug] 에 그 결과가 들어오므로 그쪽을
+ * 먼저 본다(서버가 둘 다 유지한다).
+ */
+@Serializable
+data class LabelDto(
+    @SerialName("UID") val uid: String = "",
+    @SerialName("Name") val name: String = "",
+    @SerialName("Slug") val slug: String = "",
+    @SerialName("CustomSlug") val customSlug: String = "",
+    @SerialName("PhotoCount") val photoCount: Int = 0,
+    @SerialName("Favorite") val favorite: Boolean = false,
+    @SerialName("Thumb") val thumb: String? = null,
+)
+
+/**
+ * `/api/v1/subjects` 의 항목 — 얼굴 인식으로 묶인 인물 (Phase 3.6).
+ *
+ * 검색은 [uid] 로 건다(`q=subject:<uid>`) — 이름은 공백·동명이인 문제가 있다.
+ * [CatalogItem.query][com.regnius.photoprism.core.model.CatalogItem.query] 주석 참고.
+ */
+@Serializable
+data class SubjectDto(
+    @SerialName("UID") val uid: String = "",
+    @SerialName("Name") val name: String = "",
+    @SerialName("Slug") val slug: String = "",
+    @SerialName("Type") val type: String = "person",
+    @SerialName("PhotoCount") val photoCount: Int = 0,
+    @SerialName("FileCount") val fileCount: Int = 0,
+    @SerialName("Favorite") val favorite: Boolean = false,
+    @SerialName("Excluded") val excluded: Boolean = false,
+    @SerialName("Private") val private: Boolean = false,
+    @SerialName("Thumb") val thumb: String? = null,
+)

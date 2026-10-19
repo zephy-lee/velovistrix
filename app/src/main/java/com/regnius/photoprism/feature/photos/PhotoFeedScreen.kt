@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -25,7 +26,9 @@ import com.regnius.photoprism.core.data.FeedKey
 import com.regnius.photoprism.core.model.Photo
 import com.regnius.photoprism.core.ui.FeedStateOverlay
 import com.regnius.photoprism.core.ui.LoadedCount
+import androidx.compose.ui.Alignment
 import com.regnius.photoprism.core.ui.PhotoGrid
+import com.regnius.photoprism.core.ui.rememberPhotoSelection
 import kotlinx.coroutines.launch
 
 /**
@@ -44,6 +47,13 @@ fun PhotoFeedScreen(
     onLoadedCountChanged: (LoadedCount) -> Unit = {},
     /** 화면 맨 위에 보이는 사진의 인덱스 — 슬라이드쇼 시작 위치용(Phase 3.1). */
     onVisibleStartIndexChange: (Int) -> Unit = {},
+    /**
+     * 길게 눌러 여러 장을 고를 수 있게 할지 (Phase 4.3).
+     *
+     * 끌 수 있게 둔 이유는 슬라이드쇼처럼 **고르는 것이 의미 없는 맥락**이
+     * 생길 수 있기 때문이다. 지금은 모든 그리드가 켜 둔다.
+     */
+    selectable: Boolean = true,
     viewModel: PhotoFeedViewModel = hiltViewModel(),
 ) {
     val flow = remember(key) { viewModel.feed(key) }
@@ -62,6 +72,11 @@ fun PhotoFeedScreen(
     // 것이다.
     val isRefreshing = photos.loadState.refresh is LoadState.Loading && photos.itemCount > 0
     val scope = rememberCoroutineScope()
+
+    // 선택 모드 (Phase 4.3). 뒤로가기로 빠져나온다 — 선택을 켜 둔 채 뒤로
+    // 누르면 화면이 닫히는 게 아니라 선택이 풀리는 것이 안드로이드 관례다.
+    val selection = rememberPhotoSelection()
+    BackHandler(enabled = selection.active) { selection.clear() }
 
     Box(modifier.fillMaxSize()) {
         PullToRefreshBox(
@@ -90,6 +105,7 @@ fun PhotoFeedScreen(
                 onVisibleStartIndexChange = onVisibleStartIndexChange,
                 sharedPhotoUid = sharedPhotoUid,
                 onSharedPhotoChange = viewModel::showSharedPhoto,
+                selection = selection.takeIf { selectable },
                 modifier = Modifier.fillMaxSize(),
             )
         }
@@ -100,5 +116,23 @@ fun PhotoFeedScreen(
             onRetry = photos::retry,
             modifier = Modifier.padding(contentPadding),
         )
+
+        // 선택 바는 화면의 상단 바를 가리고 올라온다 — 다섯 군데 화면이 각자
+        // 상단 바를 분기하지 않아도 되는 이유다([SelectionBar] 문서 참고).
+        if (selection.active) {
+            SelectionBar(
+                count = selection.count,
+                onClose = selection::clear,
+                onSave = {
+                    viewModel.saveToGallery(selection.photos)
+                    selection.clear()
+                },
+                onShare = {
+                    viewModel.share(selection.photos)
+                    selection.clear()
+                },
+                modifier = Modifier.align(Alignment.TopCenter),
+            )
+        }
     }
 }

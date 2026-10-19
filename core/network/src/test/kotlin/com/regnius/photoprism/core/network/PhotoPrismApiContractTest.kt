@@ -177,4 +177,57 @@ class PhotoPrismApiContractTest {
         assertEquals("dl", config.downloadToken)
         assertEquals("260601-a7d", config.version)
     }
+
+    @Test
+    fun `라벨 목록을 읽고 모르는 필드는 무시한다`() = runTest {
+        server.enqueue(
+            MockResponse().setResponseCode(200).setBody(
+                """
+                [
+                  {
+                    "UID": "lsabc", "Name": "Cat", "Slug": "cat", "CustomSlug": "",
+                    "PhotoCount": 12, "Favorite": false, "Thumb": "abc123",
+                    "Priority": 5, "SomethingNew": {"nested": true}
+                  }
+                ]
+                """.trimIndent()
+            )
+        )
+
+        val labels = api.getLabels(count = 100)
+
+        assertEquals(1, labels.size)
+        assertEquals("cat", labels[0].slug)
+        assertEquals(12, labels[0].photoCount)
+        assertEquals("abc123", labels[0].thumb)
+        // 요청 자체도 확인한다 — `all=false` 가 빠지면 사진 0장짜리 라벨까지
+        // 올라와서, 눌러도 빈 그리드만 나오는 타일이 목록을 채운다.
+        val request = server.takeRequest()
+        assertTrue(request.path!!.contains("labels?"))
+        assertTrue(request.path!!.contains("all=false"))
+    }
+
+    @Test
+    fun `인물 목록을 읽는다`() = runTest {
+        server.enqueue(
+            MockResponse().setResponseCode(200).setBody(
+                """
+                [
+                  {
+                    "UID": "srj2k3", "Name": "Jane Doe", "Slug": "jane-doe", "Type": "person",
+                    "PhotoCount": 0, "FileCount": 9, "Thumb": "def456", "Excluded": false
+                  }
+                ]
+                """.trimIndent()
+            )
+        )
+
+        val people = api.getSubjects(count = 100)
+
+        assertEquals("Jane Doe", people[0].name)
+        assertEquals(9, people[0].fileCount)
+        // 사람만 받아와야 한다 — subject 는 사람 말고 다른 종류가 생길 수 있게
+        // 열려 있는 개념이다.
+        assertTrue(server.takeRequest().path!!.contains("type=person"))
+    }
 }

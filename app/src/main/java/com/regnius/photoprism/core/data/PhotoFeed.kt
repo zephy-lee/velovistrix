@@ -14,6 +14,7 @@ import com.regnius.photoprism.core.data.local.toDomain
 import com.regnius.photoprism.core.data.local.toEntity
 import com.regnius.photoprism.core.di.ApplicationScope
 import com.regnius.photoprism.core.model.Album
+import com.regnius.photoprism.core.model.AlbumKind
 import com.regnius.photoprism.core.model.Photo
 import com.regnius.photoprism.core.network.PhotoPrismClientProvider
 import com.regnius.photoprism.core.network.PhotoQuery
@@ -31,6 +32,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -196,30 +198,46 @@ class PhotoFeedController @Inject constructor(
  *
  * Phase 2.9 — 성공한 조회만 [AlbumDao] 에 통째로 교체 저장한다. 오프라인
  * 등으로 조회에 실패하면 Room 에 남은 마지막 목록으로 폴백한다.
+ *
+ * Phase 3.1~3.4 — 하나가 아니라 [AlbumKind] 별로 **격리된** 다섯 벌이다
+ * (앨범·달력·나의 순간·지역·폴더). 메모리 캐시도, Room 캐시도 타입을 키로
+ * 나눈다. 격리가 없으면 달력을 한 번 여는 것만으로 앨범 목록 캐시가 날아가
+ * 다음 번 앨범 탭 진입이 다시 네트워크를 기다린다.
  */
 @Singleton
 class AlbumRepository @Inject constructor(
     private val clientProvider: PhotoPrismClientProvider,
     private val albumDao: AlbumDao,
 ) {
-    private var cached: List<Album>? = null
+    /**
+     * 타입별 메모리 캐시. 동시 접근이 있다 — 메뉴에서 달력을 누르는 순간
+     * 앨범 탭의 새로고침이 아직 돌고 있을 수 있어서, 평범한 `HashMap` 으로
+     * 두면 두 코루틴이 같은 맵을 동시에 고친다.
+     */
+    private val cached = ConcurrentHashMap<AlbumKind, List<Album>>()
 
     /** 캐시가 있으면 그대로, 없으면 서버에서 받아온다. */
-    suspend fun albums(forceRefresh: Boolean = false): Result<List<Album>> {
-        cached?.let { if (!forceRefresh) return Result.success(it) }
-        val api = clientProvider.currentApi ?: return offlineFallback()
+    suspend fun albums(
+        kind: AlbumKind = AlbumKind.ALBUM,
+        forceRefresh: Boolean = false,
+    ): Result<List<Album>> {
+        cached[kind]?.let { if (!forceRefresh) return Result.success(it) }
+        val api = clientProvider.currentApi ?: return offlineFallback(kind)
         return runCatching {
             // count 는 넉넉히 — 앨범 수백 개까지는 한 번에 받는 편이 정렬
             // 재요청을 없애는 이득이 훨씬 크다.
-            api.getAlbums(count = ALBUM_FETCH_LIMIT, type = "album", order = "name")
+            api.getAlbums(count = ALBUM_FETCH_LIMIT, type = kind.apiValue, order = kind.serverOrder)
                 .map { it.toDomain() }
         }.onSuccess { albums ->
-            cached = albums
+            cached[kind] = albums
             withContext(Dispatchers.IO) {
-                albumDao.replaceAll(albums.mapIndexed { i, a -> a.toEntity(orderIndex = i) })
+                albumDao.replaceAll(
+                    listType = kind.apiValue,
+                    albums = albums.mapIndexed { i, a -> a.toEntity(orderIndex = i, listType = kind.apiValue) },
+                )
             }
         }.recoverCatching { e ->
-            offlineFallback().getOrElse { throw e }
+            offlineFallback(kind).getOrElse { throw e }
         }
     }
 
@@ -233,13 +251,13 @@ class AlbumRepository @Inject constructor(
      * **메모리 캐시([cached])는 채우지 않는다** — 채우면 뒤이은 [albums] 호출이
      * 그걸 그대로 돌려주고 서버를 아예 안 부른다.
      */
-    suspend fun cachedAlbums(): List<Album> =
-        withContext(Dispatchers.IO) { albumDao.getAll().map { it.toDomain() } }
+    suspend fun cachedAlbums(kind: AlbumKind = AlbumKind.ALBUM): List<Album> =
+        withContext(Dispatchers.IO) { albumDao.getAll(kind.apiValue).map { it.toDomain() } }
 
-    private suspend fun offlineFallback(): Result<List<Album>> {
-        val local = withContext(Dispatchers.IO) { albumDao.getAll().map { it.toDomain() } }
+    private suspend fun offlineFallback(kind: AlbumKind): Result<List<Album>> {
+        val local = withContext(Dispatchers.IO) { albumDao.getAll(kind.apiValue).map { it.toDomain() } }
         return if (local.isNotEmpty()) {
-            cached = local
+            cached[kind] = local
             Result.success(local)
         } else {
             Result.failure(IllegalStateException("no session"))
@@ -247,8 +265,8 @@ class AlbumRepository @Inject constructor(
     }
 
     suspend fun clear() {
-        cached = null
-        withContext(Dispatchers.IO) { albumDao.clear() }
+        cached.clear()
+        withContext(Dispatchers.IO) { albumDao.clearAll() }
     }
 
     suspend fun album(uid: String) =

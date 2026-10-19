@@ -5,7 +5,11 @@ import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
@@ -13,9 +17,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.regnius.photoprism.R
 import com.regnius.photoprism.core.data.FeedKey
+import com.regnius.photoprism.core.model.AlbumKind
+import com.regnius.photoprism.core.model.CatalogKind
+import com.regnius.photoprism.feature.albums.AlbumBrowseScreen
 import com.regnius.photoprism.feature.albums.AlbumDetailScreen
+import com.regnius.photoprism.feature.albums.titleRes
 import com.regnius.photoprism.feature.login.LoginScreen
+import com.regnius.photoprism.feature.catalog.CatalogScreen
+import com.regnius.photoprism.feature.catalog.PhotoQueryScreen
+import com.regnius.photoprism.feature.menu.LibraryDestination
+import com.regnius.photoprism.feature.transfer.TransferUi
 import com.regnius.photoprism.feature.settings.SettingsScreen
 import com.regnius.photoprism.feature.slideshow.SlideshowScreen
 import com.regnius.photoprism.feature.viewer.ViewerScreen
@@ -34,6 +47,7 @@ fun AppNavigation(
     navController: NavHostController = rememberNavController(),
 ) {
     SharedTransitionLayout {
+      Box(Modifier.fillMaxSize()) {
         NavHost(
             navController = navController,
             startDestination = if (isAuthenticated) MainRoute else LoginRoute,
@@ -58,6 +72,57 @@ fun AppNavigation(
                     onPhotoClick = { key, index -> navController.openViewer(key, index) },
                     onStartSlideshow = { key, startIndex -> navController.openSlideshow(key, startIndex) },
                     onOpenSettings = { navController.navigate(SettingsRoute) },
+                    onOpenLibrary = { destination ->
+                        navController.navigate(
+                            when (destination) {
+                                is LibraryDestination.Albums -> AlbumBrowseRoute(destination.kind.apiValue)
+                                LibraryDestination.Labels -> CatalogRoute(CatalogKind.LABEL.storageKey)
+                                LibraryDestination.People -> CatalogRoute(CatalogKind.PERSON.storageKey)
+                            }
+                        )
+                    },
+                    sharedTransitionScope = this@SharedTransitionLayout,
+                    animatedVisibilityScope = this,
+                )
+            }
+
+            // 달력 · 나의 순간 · 지역 · 폴더 — 라우트 하나가 넷을 다 받는다
+            // (Phase 3.1~3.4). 타입은 AlbumsViewModel 이 라우트 인자에서
+            // 직접 읽으므로, 여기서는 제목/빈 문장만 붙인다.
+            composable<AlbumBrowseRoute> { entry ->
+                val route = entry.toRoute<AlbumBrowseRoute>()
+                val kind = AlbumKind.from(route.type)
+                AlbumBrowseScreen(
+                    title = stringResource(kind.titleRes()),
+                    emptyMessage = stringResource(R.string.albums_auto_empty),
+                    onBack = { navController.popFrom(entry) },
+                    onAlbumClick = { album ->
+                        navController.navigate(
+                            AlbumDetailRoute(album.uid, album.title, album.photoCount)
+                        )
+                    },
+                )
+            }
+
+            // 라벨 목록 · 사람 목록 (Phase 3.5~3.6). 고른 항목은 앨범이
+            // 아니라 검색 쿼리로 바뀌어 [PhotoQueryRoute] 로 넘어간다.
+            composable<CatalogRoute> { entry ->
+                CatalogScreen(
+                    onBack = { navController.popFrom(entry) },
+                    onItemClick = { item ->
+                        navController.navigate(PhotoQueryRoute(item.query, item.name))
+                    },
+                )
+            }
+
+            composable<PhotoQueryRoute> { entry ->
+                val route = entry.toRoute<PhotoQueryRoute>()
+                PhotoQueryScreen(
+                    title = route.title,
+                    query = route.query,
+                    onBack = { navController.popFrom(entry) },
+                    onPhotoClick = { key, index -> navController.openViewer(key, index) },
+                    onStartSlideshow = { key, startIndex -> navController.openSlideshow(key, startIndex) },
                     sharedTransitionScope = this@SharedTransitionLayout,
                     animatedVisibilityScope = this,
                 )
@@ -126,6 +191,11 @@ fun AppNavigation(
                 )
             }
         }
+
+        // 저장·공유의 진행 표시와 결과 안내 (Phase 4.4~4.5). 화면이 아니라
+        // **앱 전체에 하나** 있어야 하는 UI 다 — 이유는 TransferUi 문서 참고.
+        TransferUi()
+      }
     }
 }
 

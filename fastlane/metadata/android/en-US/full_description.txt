@@ -1,0 +1,51 @@
+VeloVistrix is an independent third-party client for PhotoPrism. It is not an official PhotoPrism app and is not affiliated with or endorsed by the PhotoPrism project.
+
+A fast, read-only viewer for the photo library on your own PhotoPrism server.
+
+YOUR LIBRARY, OPENED QUICKLY
+
+Sweep through albums and your whole timeline in a grid that keeps up with you. Tap a photo for the full-screen viewer: pinch or double-tap to zoom, swipe sideways for the next one, swipe down to close, swipe up for capture details — date, camera, lens, exposure, resolution.
+
+WHAT IT DOES
+
+• Albums, with images and videos on separate tabs, sorted by name or by when they were last updated, favourites first if you like
+
+• The full timeline, grouped by month, scrolling as far back as your library goes
+
+• Search across your library, filtered by date, media type, camera, or whether a photo has a location
+
+• The favourites you starred on the server, gathered in one tab
+
+• Video playback, falling back to the original file if streaming fails
+
+• A slideshow that starts from wherever you already are in the list, with adjustable interval, an optional Ken Burns effect, and shuffle — videos included
+
+• Four grid densities, from large tiles to a dense contact sheet, and a light or dark theme
+
+• Recent lists and thumbnails are cached, so the app still opens and shows them when you are offline
+
+WHAT IT WILL NOT DO
+
+This app never sends a write request to your server. It cannot upload, edit, delete, archive, favourite, re-tag or re-index anything, and it offers no server administration. Read-only is not a setting you have to trust here — the only request this app ever posts is the one that signs you in.
+
+NO ACCOUNT, NO TRACKING, NO ADS
+
+There is no account to create, because there is no service behind this app. It collects nothing. There are no analytics, no crash reporting, no advertising, and no tracking SDKs. The only host it ever contacts is the server address you type in. Your server URL and session token are stored encrypted on your device and never leave it.
+
+The source is open, so none of this has to be taken on faith: https://github.com/zephy-lee/velovistrix
+
+CONNECTING IS MEANT TO BE EASY
+
+Type whatever form of the address you have. A bare IP works — it will try the default port and the usual sub-paths. The scheme is optional. A URL pasted straight from your browser works as-is. If it still cannot connect, it lists every address it tried and why each one failed, so you learn whether it was the port, the path, or the certificate — not just "connection failed". Servers with a self-signed certificate show you the fingerprint and let you decide.
+
+Sign in with your password, or better, with a PhotoPrism app password you can revoke on the server at any time. Servers in public mode need no sign-in at all.
+
+REQUIREMENTS
+
+• A PhotoPrism server you can reach, build 260601 (June 2026) or newer
+
+• Android 12 or newer
+
+The menu also lists several PhotoPrism features this app does not open yet. They stay greyed out until they land.
+
+PhotoPrism is a trademark of its respective owners and is used here only to describe compatibility.

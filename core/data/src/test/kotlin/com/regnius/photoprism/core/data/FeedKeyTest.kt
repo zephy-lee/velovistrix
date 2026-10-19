@@ -69,4 +69,30 @@ class FeedKeyTest {
         assertNotEquals(FeedKey.albumImages("a1").cacheKey(), FeedKey.albumVideos("a1").cacheKey())
         assertNotEquals(FeedKey.albumImages("a1").cacheKey(), FeedKey.albumImages("a2").cacheKey())
     }
+
+    @Test
+    fun `라벨 결과의 두 탭은 서버 쿼리로 갈린다`() {
+        // 클라이언트에서 걸러내면 페이징이 망가진다 — 한 페이지 60개 중
+        // 영상이 2개뿐이면 화면이 거의 빈 채로 다음 페이지를 계속 불러온다.
+        assertEquals("label:cat ${PhotoQuery.IMAGES}", FeedKey.queryImages("label:cat").query)
+        assertEquals("label:cat ${PhotoQuery.VIDEOS}", FeedKey.queryVideos("label:cat").query)
+    }
+
+    @Test
+    fun `두 탭은 캐시도 따로 쓴다`() {
+        // 같은 캐시 키를 쓰면 이미지 탭과 동영상 탭이 서로의 Room 행을
+        // 밀어내며 번갈아 재조회한다(§17.15 와 같은 부류).
+        assertNotEquals(
+            FeedKey.queryImages("subject:s1").cacheKey(),
+            FeedKey.queryVideos("subject:s1").cacheKey(),
+        )
+    }
+
+    @Test
+    fun `라벨 결과는 최신순, 앨범 탭은 오래된순이다`() {
+        // 앨범은 사람이 이야기 순서로 모아 둔 묶음이라 처음부터 보는 게 맞고,
+        // 라벨·인물은 "이 사람 사진 보기" 라서 최근 것이 먼저다.
+        assertEquals("newest", FeedKey.queryImages("subject:s1").order)
+        assertEquals("oldest", FeedKey.albumImages("a1").order)
+    }
 }

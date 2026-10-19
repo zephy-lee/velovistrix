@@ -1,6 +1,7 @@
 package com.regnius.photoprism.core.network
 
 import com.regnius.photoprism.core.auth.SessionStore
+import com.regnius.photoprism.core.network.url.DownloadUrlFactory
 import com.regnius.photoprism.core.network.url.ServerUrl
 import com.regnius.photoprism.core.network.url.ThumbUrlFactory
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -82,6 +83,22 @@ class PhotoPrismClientProvider @Inject constructor(
         val session = sessionStore.session.value ?: return null
         val base = ServerUrl.normalize(session.serverUrl) ?: return null
         return ThumbUrlFactory(ServerUrl.apiBase(base), session.previewToken)
+    }
+
+    /**
+     * 현재 세션의 downloadToken 으로 만든 **원본 다운로드** URL 팩토리
+     * (Phase 4.4~4.5).
+     *
+     * 썸네일과 토큰이 다르다 — [thumbUrlFactory] 는 previewToken, 이쪽은
+     * downloadToken 이다. 토큰이 비어 있으면(구버전 서버·설정에 따라 안 줄 수
+     * 있다) null 을 돌려준다. 그때는 저장·공유가 조용히 실패하는 대신 "할 수
+     * 없다" 로 끝나야 한다.
+     */
+    fun downloadUrlFactory(): DownloadUrlFactory? {
+        val session = sessionStore.session.value ?: return null
+        if (session.downloadToken.isBlank()) return null
+        val base = ServerUrl.normalize(session.serverUrl) ?: return null
+        return DownloadUrlFactory(ServerUrl.apiBase(base), session.downloadToken)
     }
 
     fun invalidate() {

@@ -39,6 +39,24 @@ data class FeedKey(
          */
         fun search(text: String, requireLocation: Boolean? = null) =
             FeedKey(query = text, requireLocation = requireLocation)
+
+        /**
+         * 라벨·인물 결과의 이미지 탭 (Phase 3.5~3.6).
+         *
+         * PhotoPrism 의 `q=` 는 공백으로 나눈 필터를 **AND 로 묶는다** —
+         * `label:cat type:image|raw|...` 는 "고양이 라벨이면서 이미지" 다.
+         * 앨범 탭처럼 서버에서 가르는 것이 중요하다: 클라이언트에서 걸러내면
+         * 한 페이지 60개 중 영상이 2개뿐일 때 화면이 거의 빈 채로 다음
+         * 페이지를 계속 불러온다.
+         *
+         * 정렬은 기본값(최신순)을 쓴다. 앨범 탭은 `oldest` 인데, 앨범은 사람이
+         * 이야기 순서대로 모아 둔 묶음이라 처음부터 보는 게 맞고, 라벨·인물은
+         * "이 사람 사진 보기" 라서 최근 것이 먼저다.
+         */
+        fun queryImages(query: String) = FeedKey(query = "$query ${PhotoQuery.IMAGES}")
+
+        /** 라벨·인물 결과의 동영상 탭. [queryImages] 주석 참고. */
+        fun queryVideos(query: String) = FeedKey(query = "$query ${PhotoQuery.VIDEOS}")
     }
 }
 

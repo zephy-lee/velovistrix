@@ -4,6 +4,21 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <!--
+      Phase 3.7 — 사진의 위치를 지도 앱으로 넘기는 기능(정보 시트의 위치 줄).
+
+      안드로이드 11+ 는 선언하지 않은 다른 앱을 **아예 보여주지 않는다.** 이게
+      없으면 `queryIntentActivities` 가 지도 앱이 깔려 있어도 빈 목록을 돌려줘서,
+      우리가 "지도 앱이 없다"고 잘못 판단하고 곧장 웹 폴백으로 내려간다.
+      권한이 아니라 가시성 선언이라 사용자에게 아무것도 묻지 않는다.
+    -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="geo" />
+        </intent>
+    </queries>
+
     <application
         android:name=".PhotoPrismApp"
         android:allowBackup="false"
@@ -26,5 +41,22 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--
+          공유용 임시 원본을 받는 앱에게 넘기기 위한 FileProvider (Phase 4.4).
+
+          `exported=false` + `grantUriPermissions=true` 조합이 핵심이다 — 아무
+          앱이나 들여다볼 수 있는 것이 아니라, `ACTION_SEND` 로 URI 를 받은
+          앱만 그 URI 에 대해 한시적으로 읽을 수 있다.
+        -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 </manifest>

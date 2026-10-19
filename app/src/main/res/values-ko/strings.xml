@@ -8,6 +8,26 @@
     <string name="common_back">뒤로</string>
     <string name="common_close">닫기</string>
     <string name="common_cancel">취소</string>
+
+    <!-- ── 저장 · 공유 · 선택 (Phase 4.3~4.5) ─────────────────────────── -->
+    <string name="action_save">갤러리에 저장</string>
+    <string name="action_share">공유</string>
+    <string name="selection_clear">선택 해제</string>
+    <plurals name="selection_count">
+        <item quantity="other">%d개 선택</item>
+    </plurals>
+    <string name="transfer_saving_one">갤러리에 저장하는 중…</string>
+    <string name="transfer_saving_many">%2$d개 중 %1$d개 저장하는 중…</string>
+    <string name="transfer_sharing_one">공유할 파일을 준비하는 중…</string>
+    <string name="transfer_sharing_many">%2$d개 중 %1$d개 준비하는 중…</string>
+    <string name="transfer_saved_one">갤러리에 저장했습니다</string>
+    <plurals name="transfer_saved_many">
+        <item quantity="other">%d개를 갤러리에 저장했습니다</item>
+    </plurals>
+    <string name="transfer_saved_partial">%1$d개 저장, %2$d개는 받지 못했습니다</string>
+    <string name="transfer_failed">서버에서 원본을 받지 못했습니다.</string>
+    <string name="transfer_cancelled">취소했습니다</string>
+    <string name="transfer_busy">앞의 작업이 아직 끝나지 않았습니다 — 끝난 뒤에 다시 눌러 주세요.</string>
     <string name="common_confirm">확인</string>
     <string name="common_delete">삭제</string>
     <string name="common_retry">다시 시도</string>
@@ -133,6 +153,10 @@
     <string name="info_exposure">노출</string>
     <string name="info_resolution">해상도</string>
     <string name="info_location">위치</string>
+    <string name="info_copied">복사했습니다</string>
+    <string name="info_copy_hint">값을 두 번 누르면 복사됩니다. 위치를 누르면 지도로 엽니다.</string>
+    <string name="info_open_in_maps">위치를 열 앱 선택</string>
+    <string name="info_no_map_app">지도를 열 수 있는 앱이 없습니다.</string>
     <string name="info_type">종류</string>
     <string name="info_duration">재생 시간</string>
     <string name="info_video_codec">비디오 코덱</string>
@@ -188,15 +212,19 @@
     <string name="playback_auto">자동 (스트리밍 실패 시 원본으로 전환)</string>
     <string name="playback_original">항상 원본으로 재생 (WebDAV)</string>
 
-    <string name="upcoming_notice">준비 중 — 아직 쓸 수 없습니다</string>
-    <string name="upcoming_people">사람</string>
-    <string name="upcoming_calendar">달력</string>
-    <string name="upcoming_states">지역</string>
-    <string name="upcoming_places">장소</string>
-    <string name="upcoming_folders">폴더</string>
-    <string name="upcoming_labels">라벨</string>
-    <string name="upcoming_moments">나의 순간</string>
-    <string name="upcoming_stories">스토리</string>
+    <string name="menu_notice">라이브러리 훑어보기</string>
+    <string name="albums_auto_empty">아직 아무것도 없습니다 — 서버가 사진을 색인하면서 이 목록을 만듭니다.</string>
+    <string name="catalog_load_failed">목록을 불러오지 못했습니다.</string>
+    <string name="labels_empty">라벨이 아직 없습니다 — 서버가 사진에서 무엇이 찍혔는지 알아내면 추가됩니다.</string>
+    <string name="people_empty">사람이 아직 없습니다 — 서버가 얼굴을 알아내면 추가됩니다.</string>
+    <string name="menu_people">사람</string>
+    <string name="menu_calendar">달력</string>
+    <string name="menu_states">지역</string>
+    <string name="menu_places">장소</string>
+    <string name="menu_folders">폴더</string>
+    <string name="menu_labels">라벨</string>
+    <string name="menu_moments">나의 순간</string>
+    <string name="menu_stories">스토리</string>
 
     <string name="pattern_month_header">yyyy년 M월</string>
     <string name="pattern_full_date">yyyy년 M월 d일</string>

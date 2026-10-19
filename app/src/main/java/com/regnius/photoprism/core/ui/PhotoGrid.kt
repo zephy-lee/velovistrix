@@ -8,7 +8,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Arrangement
@@ -30,8 +32,10 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -96,6 +100,11 @@ fun PhotoGrid(
     /** 전환의 주인공이 될 사진. §17.45 — 뷰어가 페이지를 넘기면 따라 바뀐다. */
     sharedPhotoUid: String? = null,
     onSharedPhotoChange: (String) -> Unit = {},
+    /**
+     * 선택 모드 (Phase 4.3). null 이면 선택 기능이 없는 그리드다 —
+     * 길게 눌러도 아무 일도 일어나지 않는다.
+     */
+    selection: PhotoSelection? = null,
 ) {
     val formatMonth = rememberMonthFormatter()
 
@@ -188,22 +197,32 @@ fun PhotoGrid(
                     if (photo == null) {
                         Box(Modifier.aspectRatio(1f).background(MaterialTheme.colorScheme.surfaceVariant))
                     } else {
+                        val selectionActive = selection?.active == true
                         PhotoCell(
                             photo = photo,
                             thumbnails = thumbnails,
                             density = density,
                             onClick = {
-                                // 전환할 칸을 먼저 정하고 나서 이동한다 —
-                                // 그래야 이 칸이 sharedBounds 를 단 채로
-                                // 전환이 시작된다.
-                                onSharedPhotoChange(photo.uid)
-                                onPhotoClick(entry.index, photo)
+                                if (selectionActive) {
+                                    // 선택 모드에서 탭은 열기가 아니라 토글이다.
+                                    selection?.toggle(photo)
+                                } else {
+                                    // 전환할 칸을 먼저 정하고 나서 이동한다 —
+                                    // 그래야 이 칸이 sharedBounds 를 단 채로
+                                    // 전환이 시작된다.
+                                    onSharedPhotoChange(photo.uid)
+                                    onPhotoClick(entry.index, photo)
+                                }
                             },
-                            // §17.34 — **탭한 한 칸에만** 건다.
-                            sharedTransitionScope =
-                                sharedTransitionScope.takeIf { photo.uid == sharedPhotoUid },
-                            animatedVisibilityScope =
-                                animatedVisibilityScope.takeIf { photo.uid == sharedPhotoUid },
+                            onLongClick = selection?.let { { it.toggle(photo) } },
+                            selected = selection?.isSelected(photo.uid) == true,
+                            selectionActive = selectionActive,
+                            // §17.34 — **탭한 한 칸에만** 건다. 선택 모드에서는
+                            // 뷰어로 가지 않으므로 전환을 아예 걸지 않는다.
+                            sharedTransitionScope = sharedTransitionScope
+                                .takeIf { !selectionActive && photo.uid == sharedPhotoUid },
+                            animatedVisibilityScope = animatedVisibilityScope
+                                .takeIf { !selectionActive && photo.uid == sharedPhotoUid },
                         )
                     }
                 }
@@ -340,7 +359,7 @@ private fun AppendFooter(loadState: LoadState, onRetry: () -> Unit) {
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalFoundationApi::class)
 @Composable
 private fun PhotoCell(
     photo: Photo,
@@ -349,13 +368,16 @@ private fun PhotoCell(
     onClick: () -> Unit,
     sharedTransitionScope: SharedTransitionScope?,
     animatedVisibilityScope: AnimatedVisibilityScope?,
+    onLongClick: (() -> Unit)? = null,
+    selected: Boolean = false,
+    selectionActive: Boolean = false,
 ) {
     // aspectRatio 를 고정해야 이미지 로드 전후로 셀 높이가 변하지 않는다.
     // 없으면 스크롤 중에 레이아웃이 튀면서 위치가 어긋난다.
     val base = Modifier
         .aspectRatio(1f)
         .background(MaterialTheme.colorScheme.surfaceVariant)
-        .clickable(onClick = onClick)
+        .combinedClickable(onClick = onClick, onLongClick = onLongClick)
 
     val shared = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
         with(sharedTransitionScope) {
@@ -386,6 +408,63 @@ private fun PhotoCell(
         )
         if (photo.type == MediaType.VIDEO || photo.type == MediaType.LIVE || photo.type == MediaType.ANIMATED) {
             MediaBadge(photo)
+        }
+        // 선택 표시 (Phase 4.3).
+        //
+        // 고른 칸은 **안쪽으로 줄이지 않고** 덮는다 — 칸 크기를 바꾸면 선택할
+        // 때마다 그리드가 미세하게 재배치되고, 촘촘한 밀도에서는 그게 흔들림
+        // 으로 보인다. 대신 반투명 색을 덮고 체크를 얹는다.
+        if (selectionActive) {
+            SelectionMark(selected = selected)
+        }
+    }
+}
+
+/**
+ * 선택 모드의 체크 표시.
+ *
+ * 선택 모드일 때는 **안 고른 칸에도** 빈 동그라미를 그린다 — 그게 "지금 고르는
+ * 중" 이라는 신호다. 고른 칸만 표시하면, 하나도 안 고른 순간에는 평소 그리드와
+ * 구분이 안 된다.
+ */
+@Composable
+private fun androidx.compose.foundation.layout.BoxScope.SelectionMark(selected: Boolean) {
+    if (selected) {
+        Box(
+            Modifier
+                .matchParentSize()
+                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.35f)),
+        )
+    }
+    Box(
+        Modifier
+            .align(Alignment.TopStart)
+            .padding(4.dp)
+            .size(22.dp)
+            .clip(CircleShape)
+            .background(
+                if (selected) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    Color.Black.copy(alpha = 0.35f)
+                },
+            ),
+        contentAlignment = Alignment.Center,
+    ) {
+        if (selected) {
+            Icon(
+                Icons.Filled.Check,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.size(16.dp),
+            )
+        } else {
+            Box(
+                Modifier
+                    .size(18.dp)
+                    .clip(CircleShape)
+                    .background(Color.White.copy(alpha = 0.22f)),
+            )
         }
     }
 }

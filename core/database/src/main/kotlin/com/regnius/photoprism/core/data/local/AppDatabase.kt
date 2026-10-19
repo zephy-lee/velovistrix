@@ -4,10 +4,12 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.regnius.photoprism.core.data.local.dao.AlbumDao
+import com.regnius.photoprism.core.data.local.dao.CatalogDao
 import com.regnius.photoprism.core.data.local.dao.FeedRemoteKeyDao
 import com.regnius.photoprism.core.data.local.dao.PhotoDao
 import com.regnius.photoprism.core.data.local.dao.PhotoFeedDao
 import com.regnius.photoprism.core.data.local.entity.AlbumEntity
+import com.regnius.photoprism.core.data.local.entity.CatalogItemEntity
 import com.regnius.photoprism.core.data.local.entity.FeedRemoteKeyEntity
 import com.regnius.photoprism.core.data.local.entity.PhotoEntity
 import com.regnius.photoprism.core.data.local.entity.PhotoFeedEntryEntity
@@ -18,6 +20,12 @@ import com.regnius.photoprism.core.data.local.entity.PhotoFeedEntryEntity
  *
  * pre-1.0 앱이고 순수 캐시(서버가 진실 소스)라 마이그레이션을 쓰지 않는다
  * — 스키마가 바뀌면 통째로 지우고 다음 REFRESH 가 다시 채운다.
+ *
+ * `version = 4`(Phase 3.5~3.6) — [CatalogItemEntity] 테이블 추가(라벨·인물).
+ *
+ * `version = 3`(Phase 3.1~3.4) — [AlbumEntity.listType] 컬럼 추가. 앨범
+ * 캐시를 타입별로 격리하기 위한 것이다. 캐시라 버전업이 통째로 지워도
+ * 손실이 없고, 다음 조회가 타입별로 다시 채운다.
  *
  * `version = 2`(§17.16) — [FeedRemoteKeyEntity.forceRefresh] 컬럼 추가.
  * 겸사겸사, §17.11~17.15 를 고치는 동안 이 기기에 쌓여있던(당겨서
@@ -30,8 +38,9 @@ import com.regnius.photoprism.core.data.local.entity.PhotoFeedEntryEntity
         PhotoFeedEntryEntity::class,
         FeedRemoteKeyEntity::class,
         AlbumEntity::class,
+        CatalogItemEntity::class,
     ],
-    version = 2,
+    version = 4,
     exportSchema = false,
 )
 @TypeConverters(MediaFileListConverter::class)
@@ -40,6 +49,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun photoFeedDao(): PhotoFeedDao
     abstract fun feedRemoteKeyDao(): FeedRemoteKeyDao
     abstract fun albumDao(): AlbumDao
+    abstract fun catalogDao(): CatalogDao
 
     companion object {
         /**

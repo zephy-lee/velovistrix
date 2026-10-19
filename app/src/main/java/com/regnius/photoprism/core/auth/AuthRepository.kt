@@ -2,6 +2,7 @@ package com.regnius.photoprism.core.auth
 
 import androidx.annotation.StringRes
 import com.regnius.photoprism.core.data.AlbumRepository
+import com.regnius.photoprism.core.data.CatalogRepository
 import com.regnius.photoprism.core.data.PhotoFeedController
 import com.regnius.photoprism.core.model.ServerSupport
 import com.regnius.photoprism.core.network.PhotoPrismClientProvider
@@ -56,6 +57,7 @@ class AuthRepository @Inject constructor(
     private val sessionStore: SessionStore,
     private val photoFeedController: PhotoFeedController,
     private val albumRepository: AlbumRepository,
+    private val catalogRepository: CatalogRepository,
 ) {
     val session get() = sessionStore.session
 
@@ -230,5 +232,8 @@ class AuthRepository @Inject constructor(
         // 사고다. Phase 2.11 로그아웃 버튼을 실제로 연결하면서 발견했다.
         photoFeedController.clear()
         albumRepository.clear()
+        // 라벨·인물도 같이 비운다 (Phase 3.5~3.6). 서버를 바꿔 로그인했을 때
+        // 이전 서버의 사람 이름이 메뉴에 남아 있으면 그 자체로 사고다.
+        catalogRepository.clear()
     }
 }

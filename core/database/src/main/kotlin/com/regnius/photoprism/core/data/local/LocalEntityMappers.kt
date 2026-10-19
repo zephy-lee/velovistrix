@@ -1,8 +1,11 @@
 package com.regnius.photoprism.core.data.local
 
 import com.regnius.photoprism.core.data.local.entity.AlbumEntity
+import com.regnius.photoprism.core.data.local.entity.CatalogItemEntity
 import com.regnius.photoprism.core.data.local.entity.PhotoEntity
 import com.regnius.photoprism.core.model.Album
+import com.regnius.photoprism.core.model.CatalogItem
+import com.regnius.photoprism.core.model.CatalogKind
 import com.regnius.photoprism.core.model.MediaFile
 import com.regnius.photoprism.core.model.MediaType
 import com.regnius.photoprism.core.model.Photo
@@ -55,7 +58,7 @@ fun PhotoEntity.toDomain() = Photo(
     files = Json.decodeFromString<List<MediaFile>>(filesJson),
 )
 
-fun Album.toEntity(orderIndex: Int) = AlbumEntity(
+fun Album.toEntity(orderIndex: Int, listType: String) = AlbumEntity(
     uid = uid,
     title = title,
     type = type,
@@ -66,6 +69,7 @@ fun Album.toEntity(orderIndex: Int) = AlbumEntity(
     updatedAt = updatedAt,
     coverHash = coverHash,
     orderIndex = orderIndex,
+    listType = listType,
 )
 
 fun AlbumEntity.toDomain() = Album(
@@ -77,5 +81,24 @@ fun AlbumEntity.toDomain() = Album(
     favorite = favorite,
     createdAt = createdAt,
     updatedAt = updatedAt,
+    coverHash = coverHash,
+)
+
+fun CatalogItem.toEntity(orderIndex: Int) = CatalogItemEntity(
+    kind = kind.storageKey,
+    uid = uid,
+    name = name,
+    slug = slug,
+    photoCount = photoCount,
+    coverHash = coverHash,
+    orderIndex = orderIndex,
+)
+
+fun CatalogItemEntity.toDomain() = CatalogItem(
+    kind = CatalogKind.from(kind),
+    uid = uid,
+    name = name,
+    slug = slug,
+    photoCount = photoCount,
     coverHash = coverHash,
 )

@@ -1,9 +1,11 @@
 package com.regnius.photoprism.feature.albums
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.regnius.photoprism.core.data.AlbumRepository
 import com.regnius.photoprism.core.model.Album
+import com.regnius.photoprism.core.model.AlbumKind
 import com.regnius.photoprism.core.model.AlbumSort
 import com.regnius.photoprism.core.model.sortedForDisplay
 import com.regnius.photoprism.core.settings.AppSettingsRepository
@@ -26,8 +28,16 @@ sealed interface AlbumsUiState {
         val favoritesFirst: Boolean,
         /** Phase 2.10 당겨서 새로고침 중인가 — 목록은 그대로 보여준 채 인디케이터만 띄운다. */
         val isRefreshing: Boolean = false,
+        /**
+         * 정렬 바를 보여주고 정렬을 적용할지 ([AlbumKind.userSortable]).
+         *
+         * 꺼져 있으면 **서버가 준 순서 그대로** 보여준다 — 달력의 월 순서나
+         * 폴더의 경로 순서가 이름 정렬보다 정확한 정보다.
+         */
+        val sortable: Boolean = true,
     ) : AlbumsUiState {
-        val visible: List<Album> get() = all.sortedForDisplay(sort, favoritesFirst)
+        val visible: List<Album>
+            get() = if (sortable) all.sortedForDisplay(sort, favoritesFirst) else all
     }
 }
 
@@ -36,7 +46,21 @@ class AlbumsViewModel @Inject constructor(
     private val repository: AlbumRepository,
     private val settings: AppSettingsRepository,
     val thumbnails: ThumbnailLoader,
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
+
+    /**
+     * 어느 축의 목록인가 (Phase 3.1~3.4).
+     *
+     * 라우트 인자에서 읽는다. 하단 "앨범" 탭은 라우트가 아니라 `MainRoute`
+     * 안의 탭이라 이 키가 아예 없고, 그때는 [AlbumKind.ALBUM] 으로 떨어진다 —
+     * 화면 하나와 ViewModel 하나가 탭과 네 개의 새 라우트를 전부 처리한다.
+     *
+     * 키 이름 `"type"` 은 [com.regnius.photoprism.navigation.AlbumBrowseRoute]
+     * 의 프로퍼티 이름이다. 타입 안전 라우트의 인자는 그 이름으로
+     * [SavedStateHandle] 에 들어온다.
+     */
+    val kind: AlbumKind = AlbumKind.from(savedStateHandle.get<String>("type"))
 
     private val _state = MutableStateFlow<AlbumsUiState>(AlbumsUiState.Loading)
     val state: StateFlow<AlbumsUiState> = _state.asStateFlow()
@@ -67,15 +91,17 @@ class AlbumsViewModel @Inject constructor(
             val (sort, favoritesFirst) = _state.value.sortPrefs()
                 ?: (settings.albumSort.first() to settings.albumFavoritesFirst.first())
 
-            val cached = repository.cachedAlbums()
+            val cached = repository.cachedAlbums(kind)
             _state.value = if (cached.isEmpty()) {
                 AlbumsUiState.Loading
             } else {
-                AlbumsUiState.Loaded(cached, sort, favoritesFirst, isRefreshing = true)
+                AlbumsUiState.Loaded(cached, sort, favoritesFirst, isRefreshing = true, sortable = kind.userSortable)
             }
 
-            repository.albums(forceRefresh).fold(
-                onSuccess = { albums -> _state.value = AlbumsUiState.Loaded(albums, sort, favoritesFirst) },
+            repository.albums(kind, forceRefresh).fold(
+                onSuccess = { albums ->
+                    _state.value = AlbumsUiState.Loaded(albums, sort, favoritesFirst, sortable = kind.userSortable)
+                },
                 onFailure = { e ->
                     // 캐시를 이미 보여주고 있으면 에러 화면으로 밀어내지 않는다 —
                     // 그 목록은 여전히 유효하다.
@@ -99,7 +125,7 @@ class AlbumsViewModel @Inject constructor(
         val current = _state.value as? AlbumsUiState.Loaded ?: return load(forceRefresh = true)
         _state.value = current.copy(isRefreshing = true)
         viewModelScope.launch {
-            repository.albums(forceRefresh = true).fold(
+            repository.albums(kind, forceRefresh = true).fold(
                 onSuccess = { albums ->
                     _state.value = current.copy(all = albums, isRefreshing = false)
                 },

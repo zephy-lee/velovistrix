@@ -8,6 +8,7 @@ import com.regnius.photoprism.core.data.PhotoFeedController
 import com.regnius.photoprism.core.data.toDomain
 import com.regnius.photoprism.core.model.Photo
 import com.regnius.photoprism.core.settings.AppSettingsRepository
+import com.regnius.photoprism.core.transfer.MediaTransferManager
 import com.regnius.photoprism.core.ui.GridDensity
 import com.regnius.photoprism.core.ui.SharedPhotoTransition
 import com.regnius.photoprism.core.ui.ThumbnailLoader
@@ -30,8 +31,20 @@ class PhotoFeedViewModel @Inject constructor(
     private val clientProvider: com.regnius.photoprism.core.network.PhotoPrismClientProvider,
     val thumbnails: ThumbnailLoader,
     private val sharedPhoto: SharedPhotoTransition,
+    private val transfers: MediaTransferManager,
     settings: AppSettingsRepository,
 ) : ViewModel() {
+
+    /**
+     * 갤러리에 저장 (Phase 4.5) / 공유 (Phase 4.4).
+     *
+     * 진행 표시와 결과 안내는 이 ViewModel 이 하지 않는다 — 전송이 화면보다
+     * 오래 살아서, 앱 최상단의 [com.regnius.photoprism.feature.transfer.TransferUi]
+     * 한 곳이 맡는다. 여기서는 시작만 시킨다.
+     */
+    fun saveToGallery(photos: List<Photo>) = transfers.saveToGallery(photos)
+
+    fun share(photos: List<Photo>) = transfers.share(photos)
 
     /** 그리드 ↔ 뷰어 전환의 주인공이 될 사진. §17.45 */
     val sharedPhotoUid: StateFlow<String?> = sharedPhoto.photoUid

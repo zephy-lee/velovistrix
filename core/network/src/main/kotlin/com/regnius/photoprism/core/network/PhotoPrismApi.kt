@@ -2,10 +2,12 @@ package com.regnius.photoprism.core.network
 
 import com.regnius.photoprism.core.network.dto.AlbumDto
 import com.regnius.photoprism.core.network.dto.ClientConfigDto
+import com.regnius.photoprism.core.network.dto.LabelDto
 import com.regnius.photoprism.core.network.dto.PhotoDto
 import com.regnius.photoprism.core.network.dto.SessionRequestDto
 import com.regnius.photoprism.core.network.dto.SessionResponseDto
 import com.regnius.photoprism.core.network.dto.StatusDto
+import com.regnius.photoprism.core.network.dto.SubjectDto
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -95,6 +97,40 @@ interface PhotoPrismApi {
 
     @GET("photos/{uid}")
     suspend fun getPhoto(@Path("uid") uid: String): PhotoDto
+
+    /**
+     * 라벨 목록 (Phase 3.5) — 서버가 사진에서 자동 인식한 태그.
+     *
+     * 앨범처럼 페이징하지 않고 한 번에 받는다. 라벨은 많아도 수백 개 수준이고,
+     * 목록을 다 들고 있으면 정렬·필터가 메모리에서 끝난다.
+     *
+     * `all=true` 가 없으면 서버는 **사진이 달린 라벨만** 준다. 그게 우리가
+     * 원하는 것이다 — 사진 0장짜리 라벨을 눌러 빈 그리드를 보여줄 이유가
+     * 없으므로 기본값을 false 로 둔다.
+     */
+    @GET("labels")
+    suspend fun getLabels(
+        @Query("count") count: Int,
+        @Query("offset") offset: Int = 0,
+        @Query("order") order: String = "name",
+        @Query("all") all: Boolean = false,
+        @Query("q") query: String? = null,
+    ): List<LabelDto>
+
+    /**
+     * 인물 목록 (Phase 3.6) — 얼굴 인식으로 묶인 사람.
+     *
+     * `type=person` 을 명시한다. PhotoPrism 의 subject 는 사람 말고 다른
+     * 종류가 생길 수 있게 열려 있는 개념이라, 지금 서버가 사람만 준다고 해서
+     * 앞으로도 그럴 거라고 가정하면 안 된다.
+     */
+    @GET("subjects")
+    suspend fun getSubjects(
+        @Query("count") count: Int,
+        @Query("offset") offset: Int = 0,
+        @Query("type") type: String = "person",
+        @Query("order") order: String = "name",
+    ): List<SubjectDto>
 }
 
 /**

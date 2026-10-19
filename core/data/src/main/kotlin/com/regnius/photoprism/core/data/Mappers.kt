@@ -1,12 +1,16 @@
 package com.regnius.photoprism.core.data
 
 import com.regnius.photoprism.core.model.Album
+import com.regnius.photoprism.core.model.CatalogItem
+import com.regnius.photoprism.core.model.CatalogKind
 import com.regnius.photoprism.core.model.MediaFile
 import com.regnius.photoprism.core.model.MediaType
 import com.regnius.photoprism.core.model.Photo
 import com.regnius.photoprism.core.network.dto.AlbumDto
 import com.regnius.photoprism.core.network.dto.FileDto
+import com.regnius.photoprism.core.network.dto.LabelDto
 import com.regnius.photoprism.core.network.dto.PhotoDto
+import com.regnius.photoprism.core.network.dto.SubjectDto
 
 /**
  * DTO → 도메인 모델.
@@ -76,5 +80,34 @@ fun AlbumDto.toDomain() = Album(
     favorite = favorite,
     createdAt = createdAt,
     updatedAt = updatedAt,
+    coverHash = thumb?.takeIf { it.isNotBlank() },
+)
+
+/**
+ * 라벨 → [CatalogItem] (Phase 3.5).
+ *
+ * 사용자가 이름을 고친 라벨은 서버가 `CustomSlug` 에 그 결과를 넣고 `Slug` 는
+ * 원래 값으로 남겨 둔다. 검색에 쓸 것은 **지금 유효한 쪽**이라 커스텀을 먼저
+ * 본다 — 안 그러면 이름을 고친 라벨을 눌렀을 때 빈 그리드가 나온다.
+ */
+fun LabelDto.toDomain() = CatalogItem(
+    kind = CatalogKind.LABEL,
+    uid = uid,
+    name = name,
+    slug = customSlug.takeIf { it.isNotBlank() } ?: slug,
+    photoCount = photoCount,
+    coverHash = thumb?.takeIf { it.isNotBlank() },
+)
+
+/** 인물 → [CatalogItem] (Phase 3.6). */
+fun SubjectDto.toDomain() = CatalogItem(
+    kind = CatalogKind.PERSON,
+    uid = uid,
+    name = name,
+    slug = slug,
+    // 사람은 사진 수를 안 주는 서버 구성이 있다 — 그때는 파일 수로 대신한다.
+    // 둘 다 "이 사람이 몇 장에 나오나" 의 근사치이고, 숫자가 아예 없는 것보다
+    // 낫다(한 사진에 여러 파일이 달린 경우만 둘이 어긋난다).
+    photoCount = photoCount.takeIf { it > 0 } ?: fileCount,
     coverHash = thumb?.takeIf { it.isNotBlank() },
 )

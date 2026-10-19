@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  공유(Phase 4.4)로 내보내는 원본의 임시 위치.
+
+  **캐시 안의 `share/` 한 칸만 연다.** `<cache-path path="." />` 처럼 캐시
+  전체를 열면 썸네일 디스크 캐시와 Room DB 까지 같은 권한 범위에 들어간다 —
+  공유받은 앱에게 줄 이유가 없는 것들이다.
+-->
+<paths>
+    <cache-path name="share" path="share/" />
+</paths>

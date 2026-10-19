@@ -68,6 +68,13 @@ import com.regnius.photoprism.core.ui.ThumbnailLoader
 fun AlbumsScreen(
     onAlbumClick: (Album) -> Unit,
     contentPadding: PaddingValues,
+    /**
+     * 비어 있을 때 보여줄 문장. 달력·폴더 같은 **서버 자동 생성** 목록은
+     * "앨범이 없습니다" 가 맞는 말이 아니다 — 사용자가 만들 수 있는 게
+     * 아니라서, 비어 있으면 서버가 아직 그 축으로 묶을 사진을 못 찾았다는
+     * 뜻이다. 그래서 문장을 호출부가 정한다.
+     */
+    emptyMessage: String = stringResource(R.string.albums_empty),
     viewModel: AlbumsViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -110,7 +117,7 @@ fun AlbumsScreen(
                         // 같이 감춘다 — 정렬할 대상이 없다.
                         Box(Modifier.fillMaxSize(), Alignment.Center) {
                             Text(
-                                stringResource(R.string.albums_empty),
+                                emptyMessage,
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
@@ -133,12 +140,17 @@ fun AlbumsScreen(
                             // 스크롤되게 한다. 스크롤을 내리는 동안에는 어차피
                             // 안 쓰는 컨트롤이라, 고정해서 세로 공간을 상시
                             // 차지하는 것보다 같이 밀려 올라가는 편이 낫다.
-                            item(span = { GridItemSpan(maxLineSpan) }, key = "sort-bar") {
-                                SortBar(
-                                    loaded = s,
-                                    onSortChange = viewModel::setSort,
-                                    onFavoritesFirstChange = viewModel::setFavoritesFirst,
-                                )
+                            // 정렬 바는 사용자가 만든 앨범에만 있다
+                            // ([AlbumKind.userSortable]) — 달력·폴더·지역·나의
+                            // 순간은 서버 순서가 곧 정보라 정렬할 대상이 아니다.
+                            if (s.sortable) {
+                                item(span = { GridItemSpan(maxLineSpan) }, key = "sort-bar") {
+                                    SortBar(
+                                        loaded = s,
+                                        onSortChange = viewModel::setSort,
+                                        onFavoritesFirstChange = viewModel::setFavoritesFirst,
+                                    )
+                                }
                             }
                             items(albums, key = { it.uid }) { album ->
                                 AlbumCard(album, viewModel.thumbnails) { onAlbumClick(album) }
@@ -235,12 +247,24 @@ private fun AlbumCard(album: Album, thumbnails: ThumbnailLoader, onClick: () -> 
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.padding(top = 6.dp, start = 2.dp, end = 2.dp),
         )
-        Text(
-            pluralStringResource(R.plurals.common_photo_count, album.photoCount, album.photoCount),
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(start = 2.dp),
-        )
+        // **0 이면 줄 자체를 숨긴다.**
+        //
+        // 달력·지역·폴더·나의 순간은 서버가 장수를 **0 으로 준다**(실기 확인,
+        // 2026-10-10). 이 넷은 사진을 명시적으로 담아 둔 묶음이 아니라 조건으로
+        // 정의된 가상 앨범이라, 서버의 장수 계산이 보는 연결 테이블
+        // (`photos_albums`)에 행이 아예 없다. 들어가 보면 사진이 멀쩡히 나오고
+        // 탭의 숫자도 올라간다 — 즉 목록의 "0장" 만 거짓이다.
+        //
+        // 진짜 장수를 알려면 앨범마다 검색을 한 번씩 더 던져야 한다(목록 하나에
+        // 수백 번). 사실과 다른 숫자를 보여주는 것보다 **말을 안 하는 쪽**이 낫다.
+        if (album.photoCount > 0) {
+            Text(
+                pluralStringResource(R.plurals.common_photo_count, album.photoCount, album.photoCount),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(start = 2.dp),
+            )
+        }
     }
 }
 

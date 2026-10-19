@@ -17,6 +17,28 @@
     <string name="common_back">Back</string>
     <string name="common_close">Close</string>
     <string name="common_cancel">Cancel</string>
+
+    <!-- ── 저장 · 공유 · 선택 (Phase 4.3~4.5) ─────────────────────────── -->
+    <string name="action_save">Save to gallery</string>
+    <string name="action_share">Share</string>
+    <string name="selection_clear">Clear selection</string>
+    <plurals name="selection_count">
+        <item quantity="one">%d selected</item>
+        <item quantity="other">%d selected</item>
+    </plurals>
+    <string name="transfer_saving_one">Saving to your gallery…</string>
+    <string name="transfer_saving_many">Saving %1$d of %2$d…</string>
+    <string name="transfer_sharing_one">Preparing to share…</string>
+    <string name="transfer_sharing_many">Preparing %1$d of %2$d…</string>
+    <string name="transfer_saved_one">Saved to your gallery</string>
+    <plurals name="transfer_saved_many">
+        <item quantity="one">Saved %d photo</item>
+        <item quantity="other">Saved %d photos</item>
+    </plurals>
+    <string name="transfer_saved_partial">Saved %1$d, %2$d could not be downloaded</string>
+    <string name="transfer_failed">Could not download the original from your server.</string>
+    <string name="transfer_cancelled">Cancelled</string>
+    <string name="transfer_busy">Still working on the last one — try again when it finishes.</string>
     <string name="common_confirm">OK</string>
     <string name="common_delete">Delete</string>
     <string name="common_retry">Retry</string>
@@ -156,6 +178,10 @@
     <string name="info_exposure">Exposure</string>
     <string name="info_resolution">Resolution</string>
     <string name="info_location">Location</string>
+    <string name="info_copied">Copied</string>
+    <string name="info_copy_hint">Double-tap a value to copy it. Tap the location to open it in a map.</string>
+    <string name="info_open_in_maps">Open location in</string>
+    <string name="info_no_map_app">Nothing on this device can open a map.</string>
     <string name="info_type">Type</string>
     <string name="info_duration">Duration</string>
     <string name="info_video_codec">Video codec</string>
@@ -216,16 +242,22 @@
     <string name="playback_auto">Automatic (fall back to the original if streaming fails)</string>
     <string name="playback_original">Always play the original (WebDAV)</string>
 
-    <!-- ── Upcoming features ────────────────────────────────────────── -->
-    <string name="upcoming_notice">Coming later — not available yet</string>
-    <string name="upcoming_people">People</string>
-    <string name="upcoming_calendar">Calendar</string>
-    <string name="upcoming_states">Regions</string>
-    <string name="upcoming_places">Places</string>
-    <string name="upcoming_folders">Folders</string>
-    <string name="upcoming_labels">Labels</string>
-    <string name="upcoming_moments">Moments</string>
-    <string name="upcoming_stories">Stories</string>
+    <!-- ── 하단 메뉴(라이브러리 탐색 축) ─────────────────────────────── -->
+    <string name="menu_notice">Browse your library</string>
+    <!-- 서버가 자동으로 묶어 주는 목록(달력·나의 순간·지역·폴더)이 비었을 때.
+         사용자가 만들 수 있는 게 아니라서 "앨범을 만드세요" 가 맞는 말이 아니다. -->
+    <string name="albums_auto_empty">Nothing here yet — the server builds these lists as it indexes your library.</string>
+    <string name="catalog_load_failed">Couldn\'t load the list.</string>
+    <string name="labels_empty">No labels yet — the server adds them as it recognises what is in your photos.</string>
+    <string name="people_empty">No people yet — the server adds them as it recognises faces in your photos.</string>
+    <string name="menu_people">People</string>
+    <string name="menu_calendar">Calendar</string>
+    <string name="menu_states">Regions</string>
+    <string name="menu_places">Places</string>
+    <string name="menu_folders">Folders</string>
+    <string name="menu_labels">Labels</string>
+    <string name="menu_moments">Moments</string>
+    <string name="menu_stories">Stories</string>
 
     <!-- ── Date patterns (locale-specific, translated as patterns) ───── -->
     <string name="pattern_month_header">MMMM yyyy</string>

@@ -6,6 +6,8 @@
 /build
 # 모듈이 여러 개가 되면서(Phase 3.4) 각 모듈에도 build/ 가 생긴다.
 build/
+# VS Code Java 확장(Eclipse JDT)이 모듈마다 만드는 컴파일 출력.
+bin/
 /captures
 .externalNativeBuild
 .cxx

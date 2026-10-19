@@ -12,6 +12,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -27,7 +28,9 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -524,11 +527,36 @@ fun ViewerScreen(
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.align(Alignment.Center),
                 )
-                IconButton(
-                    onClick = { infoVisible = true },
+                // 저장·공유·정보 (Phase 4.4~4.5).
+                //
+                // 한 장을 보고 있을 때가 "이거 저장해 둘까" 가 가장 자연스러운
+                // 자리다. 그리드에서는 길게 눌러 여러 장을 고르지만, 뷰어에서는
+                // 지금 보는 한 장이 곧 대상이라 선택 모드 없이 바로 누른다.
+                Row(
                     modifier = Modifier.align(Alignment.CenterEnd),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Icon(Icons.Filled.Info, stringResource(R.string.viewer_info), tint = MaterialTheme.colorScheme.onSurface)
+                    IconButton(onClick = { current?.let { viewModel.share(listOf(it)) } }) {
+                        Icon(
+                            Icons.Filled.Share,
+                            stringResource(R.string.action_share),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                        )
+                    }
+                    IconButton(onClick = { current?.let { viewModel.saveToGallery(listOf(it)) } }) {
+                        Icon(
+                            Icons.Filled.Download,
+                            stringResource(R.string.action_save),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                        )
+                    }
+                    IconButton(onClick = { infoVisible = true }) {
+                        Icon(
+                            Icons.Filled.Info,
+                            stringResource(R.string.viewer_info),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                        )
+                    }
                 }
             }
         }

@@ -67,8 +67,9 @@ import com.regnius.photoprism.core.data.FeedKey
 import com.regnius.photoprism.core.model.Album
 import com.regnius.photoprism.core.ui.CompactTopBarHeight
 import com.regnius.photoprism.feature.albums.AlbumsScreen
+import com.regnius.photoprism.feature.menu.LibraryDestination
+import com.regnius.photoprism.feature.menu.LibraryMenu
 import com.regnius.photoprism.feature.photos.PhotoFeedScreen
-import com.regnius.photoprism.feature.placeholder.UpcomingFeaturesMenu
 import com.regnius.photoprism.feature.search.SearchBody
 import com.regnius.photoprism.feature.search.SearchFilterSheet
 import com.regnius.photoprism.feature.search.SearchFilters
@@ -94,8 +95,9 @@ private val MENU_PANEL_MAX_WIDTH = 480.dp
  * 상단 앱바에는 검색과 오버플로(⋮ — 슬라이드쇼·설정)가 있다. 설정은 원래
  * 하단 "메뉴" 탭의 본문이었는데, 하단 탭은 "라이브러리를 어떤 축으로 훑을
  * 것인가"를 고르는 자리라 앱 환경설정이 그 넷 중 하나로 앉아 있는 게
- * 어색해서 이리로 옮겼다. 빈 자리가 된 메뉴 탭은 앞으로 만들 탐색 기능들을
- * 비활성으로 보여준다([UpcomingFeaturesScreen]).
+ * 어색해서 이리로 옮겼다. 빈 자리가 된 메뉴 탭은 라이브러리를 훑는 축들을
+ * 보여준다([com.regnius.photoprism.feature.menu.LibraryMenu]) — Phase 3 에서
+ * 여덟 중 여섯이 켜졌고, 장소(지도)와 스토리만 비활성으로 남아 있다.
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
@@ -104,6 +106,8 @@ fun MainShell(
     onPhotoClick: (FeedKey, Int) -> Unit,
     onStartSlideshow: (FeedKey, startIndex: Int) -> Unit = { _, _ -> },
     onOpenSettings: () -> Unit = {},
+    /** 메뉴 패널에서 고른 탐색 축 (Phase 3.1~3.6). */
+    onOpenLibrary: (LibraryDestination) -> Unit = {},
     sharedTransitionScope: SharedTransitionScope? = null,
     animatedVisibilityScope: AnimatedVisibilityScope? = null,
 ) {
@@ -407,7 +411,14 @@ fun MainShell(
                     // 들어선다(사용자 지정) — 별도 화면으로 넘어가는 게 아니라
                     // 지금 화면 위에서 잠깐 고르는 것이라는 게 더 정확하다.
                     if (menuOpen) {
-                        UpcomingFeaturesMenu()
+                        LibraryMenu(
+                            onOpen = { destination ->
+                                // 패널을 먼저 닫는다 — 안 닫으면 새 화면에서
+                                // 뒤로 돌아왔을 때 메뉴가 열린 채로 남는다.
+                                menuOpen = false
+                                onOpenLibrary(destination)
+                            },
+                        )
                     } else {
                         NavigationBar(
                             containerColor = Color.Transparent,

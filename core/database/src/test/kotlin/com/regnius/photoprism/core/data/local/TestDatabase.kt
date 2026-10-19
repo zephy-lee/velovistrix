@@ -43,10 +43,10 @@ internal fun photo(uid: String, hash: String = "h-$uid") = PhotoEntity(
     filesJson = "[]",
 )
 
-internal fun album(uid: String, order: Int) = AlbumEntity(
+internal fun album(uid: String, order: Int, listType: String = "album") = AlbumEntity(
     uid = uid,
     title = "album-$uid",
-    type = "album",
+    type = listType,
     description = null,
     photoCount = 0,
     favorite = false,
@@ -54,6 +54,7 @@ internal fun album(uid: String, order: Int) = AlbumEntity(
     updatedAt = null,
     coverHash = null,
     orderIndex = order,
+    listType = listType,
 )
 
 internal fun feedKey(name: String, lastRefreshedAt: Long) = FeedRemoteKeyEntity(

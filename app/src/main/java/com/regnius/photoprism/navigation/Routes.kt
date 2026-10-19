@@ -110,6 +110,44 @@ fun SlideshowRoute.toFeedKey(): FeedKey = FeedKey(
 )
 
 /**
+ * 달력 · 나의 순간 · 지역 · 폴더 (Phase 3.1~3.4).
+ *
+ * 네 기능이 라우트 **하나**다. 서버 쪽에서 `albums?type=` 값만 다른 같은
+ * 요청이고 화면도 같으므로, 라우트를 넷으로 늘리면 똑같은 코드가 네 벌
+ * 생긴다.
+ *
+ * [type] 은 [com.regnius.photoprism.core.model.AlbumKind.apiValue] 다.
+ * enum 을 직접 싣지 않는 이유: 네비게이션 인자는 Bundle 을 거치므로 문자열이
+ * 가장 안전하고, 모르는 값이 들어와도 `AlbumKind.from` 이 앨범으로 떨어진다.
+ * **프로퍼티 이름 `type` 이 그대로 SavedStateHandle 의 키가 된다** —
+ * `AlbumsViewModel.kind` 가 그 이름으로 읽으니 바꾸면 같이 고쳐야 한다.
+ */
+@Serializable data class AlbumBrowseRoute(val type: String)
+
+/**
+ * 라벨 · 사람 목록에서 고른 하나를 사진 그리드로 펼친 화면 (Phase 3.5~3.6).
+ *
+ * 라벨과 사람은 앨범이 아니라 **검색 쿼리**로 바뀐다 — `q=label:cat`,
+ * `q=person:"Jane Doe"`. 그래서 앨범 상세([AlbumDetailRoute])처럼 이미지·
+ * 동영상 탭으로 나누지 않고 사진 그리드 하나를 그대로 쓴다. [FeedKey] 에
+ * 얹히므로 캐싱·페이징·뷰어·슬라이드쇼가 전부 따라온다.
+ */
+@Serializable data class PhotoQueryRoute(
+    val query: String,
+    val title: String,
+)
+
+/**
+ * 라벨 목록 · 사람 목록 (Phase 3.5~3.6).
+ *
+ * [AlbumBrowseRoute] 와 같은 이유로 라우트 하나가 둘을 받는다 — 그릴 것이
+ * 같고(이름표 격자), 받아오는 방식도 같다. [kind] 는
+ * [com.regnius.photoprism.core.model.CatalogKind.storageKey] 이고,
+ * **프로퍼티 이름 `kind` 가 그대로 SavedStateHandle 의 키**가 된다.
+ */
+@Serializable data class CatalogRoute(val kind: String)
+
+/**
  * 설정 (Phase 2.11).
  *
  * 원래 하단 "메뉴" 탭의 본문이었는데 상단 앱바의 오버플로(⋮)에서 여는 별도

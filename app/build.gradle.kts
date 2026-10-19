@@ -30,8 +30,10 @@ android {
         // 업로드마다 반드시 증가해야 한다. **연도를 앞에 붙인 YYMMDDR** 을 쓴다:
         // versionName 의 `09060` 을 그대로 정수로 만들면 다음 해 1월(01050)에
         // 값이 **작아져서** Play 가 업로드를 거부한다.
-        versionCode = 2609120   // YYMMDD + 증분 1자리
-        versionName = "1.3.09120"
+        // 가운데 자리는 **페이즈**다(§11.5) — Phase 4(저장·공유)를 끝내면서
+        // 1.3 → 1.4 로 올렸다. 날짜 자리는 올릴 날에 다시 맞춘다.
+        versionCode = 2610190   // YYMMDD + 증분 1자리
+        versionName = "1.4.10190"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -53,7 +55,9 @@ android {
         create("fdroid") {
             dimension = "store"
             applicationIdSuffix = ".fdroid"
-            versionNameSuffix = "-fdroid"
+            // versionNameSuffix 는 두지 않는다. F-Droid 는 위 defaultConfig 의
+            // versionName 문자열을 읽어 릴리스 태그(v<versionName>)와 맞추고,
+            // 빌드한 APK 의 versionName 도 그 값과 같아야 한다.
             // 소스 공개 빌드는 Pro 전 기능을 해제한 상태로 배포한다 (§10.4).
             buildConfigField("boolean", "PRO_UNLOCKED_BY_DEFAULT", "true")
             buildConfigField("String", "STORE_NAME", "\"fdroid\"")
@@ -79,7 +83,13 @@ android {
     kotlin {
         jvmToolchain {
             languageVersion.set(JavaLanguageVersion.of(21))
-            vendor.set(org.gradle.jvm.toolchain.JvmVendorSpec.ADOPTIUM)
+            // 편집기 Java 확장이 들고 오는 jlink 없는 JDK 를 피하려고 Adoptium 으로
+            // 고정한다. F-Droid 빌드 서버에는 Debian OpenJDK 뿐이고 JDK 를 받아 올
+            // resolver 도 없어서, 거기서는 `-Pvelovistrix.anyJdkVendor=true` 로 푼다
+            // (fdroiddata 메타데이터의 gradleprops).
+            if (providers.gradleProperty("velovistrix.anyJdkVendor").orNull != "true") {
+                vendor.set(org.gradle.jvm.toolchain.JvmVendorSpec.ADOPTIUM)
+            }
         }
         compilerOptions {
             jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
@@ -106,6 +116,14 @@ android {
 
     testOptions {
         unitTests.isReturnDefaultValues = true
+    }
+
+    // AGP 가 APK 서명 블록에 넣는 의존성 목록은 Google 공개키로 암호화돼 있어
+    // F-Droid 스캐너가 내용을 확인할 수 없는 블롭으로 본다. APK 에서는 빼고,
+    // Play 가 읽는 AAB 에만 남긴다.
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = true
     }
 }
 
