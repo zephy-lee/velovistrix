@@ -1,0 +1,7 @@
+GIFs now play in the viewer, and saving or sharing one keeps the animated original.
+
+Live photos no longer flash when they start, and they loop without downloading the clip again.
+
+Servers with a self-signed certificate now show the fingerprint dialog, so you can check it and trust it.
+
+The first screen suggests the public demo server, so you can look around without a server of your own.

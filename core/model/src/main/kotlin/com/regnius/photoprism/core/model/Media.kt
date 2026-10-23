@@ -130,6 +130,27 @@ data class Photo(
 
     val videoHash: String? get() = videoFile?.hash?.takeIf { it.isNotBlank() }
 
+    /**
+     * GIF(`Type: "animated"`)의 움직이는 원본 파일 (§22).
+     *
+     * [videoFile] 로는 못 찾는다 — 서버가 GIF 파일에 `Video: true` 를 주지 않고,
+     * primary 는 정지 사이드카(`*.gif.jpg`)다(데모 서버 실측). 그래서 MIME 으로
+     * 고른다. 이 파일의 해시로 `/videos/.../avc` 를 요청하면 서버가 MP4 로
+     * 바꿔 준다. 목록 응답이 GIF 파일을 빠뜨리면(§17.8) null — 뷰어는 정지
+     * 사진으로 남는다.
+     *
+     * Mime 을 안 주는 서버가 있어 확장자로도 한 번 더 찾는다 — 못 찾으면
+     * 재생·저장·정보가 모두 정지 사이드카로 떨어지는데(§22.4), 그게 바로
+     * 고친 증상이다.
+     */
+    val animatedFile: MediaFile?
+        get() = if (type != MediaType.ANIMATED) {
+            null
+        } else {
+            files.firstOrNull { it.mimeType == "image/gif" }
+                ?: files.firstOrNull { it.name.endsWith(".gif", ignoreCase = true) }
+        }
+
     /** 검색의 "위치 유무" 필터(Phase 2.2)가 쓴다. */
     val hasLocation: Boolean get() = latitude != null && longitude != null
 }

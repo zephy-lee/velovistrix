@@ -49,6 +49,23 @@ class UntrustedCertificateException(
 ) : CertificateException("untrusted certificate: $subject ($fingerprint)", cause)
 
 /**
+ * 예외의 원인 체인에서 [UntrustedCertificateException] 을 찾는다 (§24).
+ *
+ * [UserPinnedTrustManager] 가 던진 예외는 그대로 올라오지 않는다 — 안드로이드
+ * TLS 스택이 `SSLHandshakeException` 의 cause 로 감싸서 OkHttp 에 넘긴다.
+ * 바깥 예외만 `as?` 로 보면 절대 맞지 않아서, 지문 승인 대화상자가 한 번도
+ * 뜨지 않았다 (F-Droid MR 테스터 제보).
+ */
+fun Throwable.findUntrustedCertificate(): UntrustedCertificateException? =
+    generateSequence(this) { it.cause?.takeIf { cause -> cause !== it } }
+        .take(MAX_CAUSE_DEPTH)
+        .filterIsInstance<UntrustedCertificateException>()
+        .firstOrNull()
+
+/** 원인 체인이 순환하는 병적인 경우를 막는 상한. 실제 체인은 2~3 단이다. */
+private const val MAX_CAUSE_DEPTH = 16
+
+/**
  * 시스템 신뢰 저장소를 먼저 쓰고, 실패하면 사용자가 승인한 핀을 확인한다. §4.5
  *
  * **의도적으로 trust-all 을 구현하지 않는다.** 모든 인증서를 무조건 신뢰하는

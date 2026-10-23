@@ -22,12 +22,18 @@ import kotlinx.coroutines.launch
 import okhttp3.HttpUrl
 import javax.inject.Inject
 
+/** PhotoPrism 이 운영하는 공개 데모 서버 (public 모드, 읽기 전용으로 둘러보기 좋다). */
+const val DEMO_SERVER_URL = "demo.photoprism.app"
+
 /** 로그인은 두 단계다: ① 서버 확인(프로브) → ② 자격증명. */
 enum class LoginStage { EnterServer, EnterCredentials, PublicReady, Connecting }
 
 data class LoginUiState(
     val stage: LoginStage = LoginStage.EnterServer,
-    val serverUrl: String = "",
+    // §25 — 첫 화면에서 바로 "서버 확인" 을 눌러 볼 수 있게 공개 데모 서버를
+    // 미리 넣어 둔다. 자기 서버가 없는 사람(스토어 심사자 포함)은 그대로 들어가
+    // 보고, 있는 사람은 지우고 입력하면 된다. 데모는 public 모드라 로그인이 없다.
+    val serverUrl: String = DEMO_SERVER_URL,
     val username: String = "",
     val password: String = "",
     val useAppPassword: Boolean = false,

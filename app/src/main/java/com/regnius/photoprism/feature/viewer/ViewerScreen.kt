@@ -39,6 +39,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -50,6 +51,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -136,6 +138,14 @@ fun ViewerScreen(
         initialPage = startIndex,
         pageCount = { photos.itemCount },
     )
+
+    // §22 — 라이브 사진·GIF 클립은 이 뷰어가 떠 있는 동안만 캐시한다.
+    // 뷰어를 나가면 폴더째 지운다.
+    val context = LocalContext.current
+    val clipCache = remember { ViewerClipCache.open(context) }
+    DisposableEffect(clipCache) {
+        onDispose { clipCache.release() }
+    }
 
 
     // Paging 아이템이 0개에서 N개로 도착했을 때, PagerState 가 초기 0에 
@@ -396,6 +406,17 @@ fun ViewerScreen(
                 val videoUrl = remember(videoHash) {
                     videoHash?.let { viewModel.thumbnails.videoUrl(it) }
                 }
+                // §22 — 무음 반복 클립: 라이브 사진은 동영상 파일, GIF 는 서버가
+                // MP4 로 바꿔 주는 GIF 파일.
+                val clipUrl = remember(photo, videoUrl) {
+                    when (photo.type) {
+                        MediaType.LIVE -> videoUrl
+                        MediaType.ANIMATED -> photo.animatedFile?.hash
+                            ?.takeIf { it.isNotBlank() }
+                            ?.let { viewModel.thumbnails.videoUrl(it) }
+                        else -> null
+                    }
+                }
 
                 // 모든 미디어 타입(사진, 동영상, 라이브 포토)에 줌 기능을 동일하게 적용함 (§UX 수정).
                 // 이전에는 동영상 플레이어 컨트롤과의 터치 충돌 때문에 동영상은 줌을 제외했으나,
@@ -452,8 +473,8 @@ fun ViewerScreen(
                                 modifier = Modifier.fillMaxSize(),
                             )
                         }
-                    } else if (photo.type == MediaType.LIVE && videoUrl != null) {
-                        // 라이브 포토도 비디오와 동일하게 처리.
+                    } else if (clipUrl != null) {
+                        // 라이브 포토 · GIF — 정지 사진 위에 무음 반복 클립을 얹는다.
                         Box(Modifier.fillMaxSize()) {
                             ViewerImage(
                                 full = request,
@@ -463,9 +484,10 @@ fun ViewerScreen(
                             )
                             if (isCurrentPage) {
                                 LivePhotoPlayer(
-                                    uri = videoUrl,
+                                    uri = clipUrl,
                                     isActive = true,
                                     zoomState = pageZoomState,
+                                    clipCache = clipCache,
                                     modifier = Modifier.fillMaxSize(),
                                 )
                             }

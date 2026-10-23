@@ -8,7 +8,7 @@ import com.regnius.photoprism.core.model.ServerSupport
 import com.regnius.photoprism.core.network.PhotoPrismClientProvider
 import com.regnius.photoprism.core.network.dto.ClientConfigDto
 import com.regnius.photoprism.core.network.dto.SessionRequestDto
-import com.regnius.photoprism.core.network.tls.UntrustedCertificateException
+import com.regnius.photoprism.core.network.tls.findUntrustedCertificate
 import com.regnius.photoprism.core.network.url.ServerUrl
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -109,8 +109,10 @@ class AuthRepository @Inject constructor(
 
         // 인증서를 못 믿는 경우는 사용자가 지문을 승인하면 바로 통과할 수 있는
         // 상태다. 다른 실패보다 우선해 보여줘야 조치를 안내할 수 있다.
+        // TLS 스택이 SSLHandshakeException 으로 감싸 올리므로 원인 체인에서
+        // 꺼낸다 — 꺼낸 예외를 넘겨야 화면 쪽의 `is` 검사가 맞는다 (§24).
         outcomes.firstNotNullOfOrNull { (base, result) ->
-            (result.exceptionOrNull() as? UntrustedCertificateException)?.let { base to it }
+            result.exceptionOrNull()?.findUntrustedCertificate()?.let { base to it }
         }?.let { (base, e) -> return@coroutineScope ProbeResult.Unreachable(base, e) }
 
         val attempts = outcomes.mapNotNull { (base, result) ->

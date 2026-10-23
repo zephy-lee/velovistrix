@@ -2,6 +2,8 @@ package com.regnius.photoprism.feature.viewer
 
 import android.util.Log
 import android.view.LayoutInflater
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,6 +31,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
@@ -620,7 +623,7 @@ private fun NoNetworkOverlay(modifier: Modifier = Modifier, onRetry: () -> Unit)
 }
 
 /**
- * Live Photo (Phase 2.8) — 무음 · 반복 · 컨트롤 없음.
+ * Live Photo (Phase 2.8) · GIF (§22) — 무음 · 반복 · 컨트롤 없음.
  *
  * PhotoPrism 의 "Live"(모션 사진)는 정지 프레임 하나와 그 순간을 감싼 짧은
  * 무음 영상으로 이뤄진다. 사용자가 손대지 않아도 보고 있는 동안 저절로
@@ -630,6 +633,11 @@ private fun NoNetworkOverlay(modifier: Modifier = Modifier, onRetry: () -> Unit)
  * 재생 실패 시에도 에러 UI를 띄우지 않는다 — 이미 그 아래 정지 프레임이 깔려
  * 있어서, 실패하면 그냥 "움직이지 않는 사진"으로 조용히 물러나는 게 자연스럽다.
  * 다만 §17.1 조사를 위해 로그는 남긴다.
+ *
+ * GIF 도 같은 플레이어로 튼다 — 서버가 GIF 를 MP4 로 변환해 주는
+ * `/videos/{gif 해시}/{토큰}/avc` 가 원본 GIF 보다 열 배쯤 작다(§21.1).
+ *
+ * [clipCache] 가 있으면 한 번 받은 클립을 반복 재생에 다시 쓴다(§22).
  */
 @UnstableApi
 @Composable
@@ -637,6 +645,7 @@ fun LivePhotoPlayer(
     uri: String,
     isActive: Boolean,
     zoomState: ZoomState? = null,
+    clipCache: ViewerClipCache? = null,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -649,9 +658,32 @@ fun LivePhotoPlayer(
             .build()
     }
 
+    // §22 — 첫 프레임이 나오기 전의 PlayerView 는 영상 크기를 아직 몰라서,
+    // 첫 프레임을 뷰 전체 크기로 늘려 그렸다가 다음 프레임에 제 비율로
+    // 줄인다. 정지 사진 위에서 이게 한 번 번쩍여 보였다(§21.2 ①). 그래서
+    // 첫 프레임이 그려지고 레이아웃이 따라잡을 때까지는 투명하게 두고,
+    // 그 뒤에 페이드인한다 — 그동안은 아래 깔린 정지 사진이 보인다.
+    var firstFrameRendered by remember(uri) { mutableStateOf(false) }
+    var videoVisible by remember(uri) { mutableStateOf(false) }
+    LaunchedEffect(firstFrameRendered) {
+        if (firstFrameRendered) {
+            // 영상 크기가 정해진 뒤의 레이아웃은 다음 프레임에 반영된다.
+            // 두 프레임을 기다려 제 비율로 그려진 뒤에 보이게 한다.
+            withFrameNanos { }
+            withFrameNanos { }
+            videoVisible = true
+        }
+    }
+    val videoAlpha by animateFloatAsState(
+        targetValue = if (videoVisible) 1f else 0f,
+        animationSpec = tween(durationMillis = 180),
+        label = "liveVideoAlpha",
+    )
+
     val exoPlayer = remember(uri) {
-        val dataSourceFactory = OkHttpDataSource.Factory(videoOkHttpClient)
+        val upstream = OkHttpDataSource.Factory(videoOkHttpClient)
             .setUserAgent("VeloVistrixPhotoPrism/1.0")
+        val dataSourceFactory = clipCache?.dataSourceFactory(upstream) ?: upstream
 
         ExoPlayer.Builder(context)
             .setMediaSourceFactory(DefaultMediaSourceFactory(dataSourceFactory))
@@ -660,6 +692,10 @@ fun LivePhotoPlayer(
                 addListener(object : Player.Listener {
                     override fun onPlayerError(playbackException: PlaybackException) {
                         Log.w(LOG_TAG, "live photo playback failed for $uri: ${playbackException.errorCodeName}", playbackException)
+                    }
+
+                    override fun onRenderedFirstFrame() {
+                        firstFrameRendered = true
                     }
                 })
                 setMediaItem(MediaItem.fromUri(uri))
@@ -690,6 +726,7 @@ fun LivePhotoPlayer(
             if (playerView.player != exoPlayer) {
                 playerView.player = exoPlayer
             }
+            playerView.alpha = videoAlpha
 
             // 라이브 포토도 줌 상태를 Surface 에 직접 반영함.
             playerView.videoSurfaceView?.let { surface ->

@@ -13,7 +13,10 @@ android {
     // 의존 라이브러리(core-ktx 1.19, okhttp-android 5.5)가 SDK 37 컴파일을 요구한다.
     // targetSdk 는 36 에 둔다 — compileSdk 는 "새 API 를 쓸 수 있는가",
     // targetSdk 는 "새 런타임 동작을 받아들이는가" 로 서로 독립이다.
-    // 37 의 동작 변경은 Phase 1 에서 검토한 뒤 올린다.
+    // 37 의 동작 변경은 §23 에서 전수 검토했다. 올리려면 **로컬 네트워크
+    // 권한**이 함께 가야 한다 — 37 부터 LAN 접속이 기본 차단되고, 이 앱의
+    // 서버는 사설망인 경우가 흔하다(§4.5). 안드로이드 17 기기로 확인할 수
+    // 있을 때 올린다.
     compileSdk = 37
 
     defaultConfig {
@@ -32,8 +35,8 @@ android {
         // 값이 **작아져서** Play 가 업로드를 거부한다.
         // 가운데 자리는 **페이즈**다(§11.5) — Phase 4(저장·공유)를 끝내면서
         // 1.3 → 1.4 로 올렸다. 날짜 자리는 올릴 날에 다시 맞춘다.
-        versionCode = 2610190   // YYMMDD + 증분 1자리
-        versionName = "1.4.10190"
+        versionCode = 2610240   // YYMMDD + 증분 1자리
+        versionName = "1.4.10240"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 

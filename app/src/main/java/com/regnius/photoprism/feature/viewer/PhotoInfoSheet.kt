@@ -89,12 +89,17 @@ fun PhotoInfoSheet(
 
         // 어느 파일을 "이 항목의 파일 정보"로 보여줄지 고른다.
         // 비디오면 비디오 파일을, 아니면 메인(Primary) 파일을 우선한다.
+        //
+        // GIF 만 예외다 (§22.4) — primary 가 정지 사이드카(`*.gif.jpg`)라
+        // 그대로 보여주면 이름·크기·해상도가 전부 그 JPEG 것이 된다. 저장
+        // 되는 파일(`TransferTargets.fileFor`)과 같은 것을 보여줘야 한다.
         val videoFile = displayPhoto.files.firstOrNull { it.isVideo }
-        val infoFile = if (displayPhoto.type == MediaType.VIDEO) {
-            videoFile
-        } else {
-            displayPhoto.files.firstOrNull { it.isPrimary }
-        } ?: displayPhoto.files.firstOrNull()
+        val infoFile = when (displayPhoto.type) {
+            MediaType.VIDEO -> videoFile
+            MediaType.ANIMATED -> displayPhoto.animatedFile
+            else -> displayPhoto.files.firstOrNull { it.isPrimary }
+        } ?: displayPhoto.files.firstOrNull { it.isPrimary }
+            ?: displayPhoto.files.firstOrNull()
 
         val copiedMessage = stringResource(R.string.info_copied)
         val copy: (String) -> Unit = { value -> copyToClipboard(context, value, copiedMessage) }

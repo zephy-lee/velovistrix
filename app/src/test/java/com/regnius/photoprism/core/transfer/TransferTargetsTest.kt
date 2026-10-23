@@ -68,6 +68,37 @@ class TransferTargetsTest {
     }
 
     @Test
+    fun `GIF 은 정지 사이드카가 아니라 움직이는 원본을 받는다`() {
+        // animated 항목의 primary 는 *.gif.jpg 다 (§22.4). 그걸 받으면
+        // 갤러리에 안 움직이는 JPEG 가 들어가는데, 아무 오류도 안 난다.
+        val gifPhoto = photo(type = MediaType.ANIMATED, files = listOf(
+            file("GIF/Cradle.gif.jpg", "image/jpeg", primary = true),
+            file("GIF/Cradle.gif", "image/gif", primary = false, hash = "gif1"),
+        ))
+
+        val target = TransferTargets.fileFor(gifPhoto)
+
+        assertEquals("GIF/Cradle.gif", target?.name)
+        assertEquals("Cradle.gif", TransferTargets.displayName(gifPhoto, target!!))
+        assertEquals("image/gif", TransferTargets.mimeType(gifPhoto, target))
+        // 갤러리의 사진 컬렉션에 들어가야 한다 — MP4 로 변환해 받는 것이 아니다.
+        assertFalse(TransferTargets.isVideo(gifPhoto, target))
+    }
+
+    @Test
+    fun `GIF 파일이 응답에 없으면 정지 사진이라도 받는다`() {
+        // 목록 응답이 GIF 파일을 빠뜨리는 경우가 있다 (§17.8). 그때 아무것도
+        // 안 주면 저장 버튼이 조용히 실패한다.
+        val target = TransferTargets.fileFor(
+            photo(type = MediaType.ANIMATED, files = listOf(
+                file("GIF/Cradle.gif.jpg", "image/jpeg", primary = true),
+            )),
+        )
+
+        assertEquals("GIF/Cradle.gif.jpg", target?.name)
+    }
+
+    @Test
     fun `이름은 경로가 아니라 파일 이름만 쓴다`() {
         // 서버의 Name 은 원본 폴더 기준 상대 경로다. 그대로 쓰면 갤러리에
         // 폴더가 생긴다.

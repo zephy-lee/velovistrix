@@ -21,13 +21,21 @@ object TransferTargets {
      * 중요하다** — RAW+JPEG 가 한 항목으로 합쳐진 경우(`merged=true`, §4.3)
      * 파일이 여럿인데, 사람이 "이 사진" 이라고 할 때 기대하는 것은 JPEG 쪽이다.
      * RAW 를 내주면 갤러리 앱이 못 여는 수십 MB 파일이 들어간다.
+     *
+     * **GIF 은 예외다** (§22.4) — `animated` 항목의 primary 는 정지
+     * 사이드카(`*.gif.jpg`)라, 위 규칙대로 받으면 갤러리에 **안 움직이는
+     * JPEG** 가 들어간다. 움직이는 원본을 받아야 한다.
      */
     fun fileFor(photo: Photo): MediaFile? = when (photo.type) {
         MediaType.VIDEO -> photo.videoFile ?: photo.files.firstOrNull()
-        else -> photo.files.firstOrNull { it.isPrimary && !it.isVideo }
+        MediaType.ANIMATED -> photo.animatedFile ?: primaryStill(photo)
+        else -> primaryStill(photo)
+    }
+
+    private fun primaryStill(photo: Photo): MediaFile? =
+        photo.files.firstOrNull { it.isPrimary && !it.isVideo }
             ?: photo.files.firstOrNull { !it.isVideo }
             ?: photo.files.firstOrNull()
-    }
 
     /**
      * 저장될 파일 이름.
